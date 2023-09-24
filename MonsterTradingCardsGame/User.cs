@@ -13,8 +13,33 @@ namespace MonsterTradingCardsGame
         public List<Card>? Stack { get; set; }
         public List<Card>? Deck { get; set; }
         private int Coins { get; set; }
-        public void BuyPackage() { }
-        public void ManageCards() { }
+        public void BuyPackage() { 
+            if(Coins > 5)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    //Stack.Add(new Card());
+                }
+            }
+        }
+        public void ManageCards(int StackCardNr, int DeckCardNr) {
+            if(StackCardNr < Stack.Count && DeckCardNr <= Deck.Count && DeckCardNr < 5)
+            {
+                if (!Stack[StackCardNr].InStore)
+                {
+                    Deck[DeckCardNr] = Stack[StackCardNr];
+                }
+            }
+        }
         public void ShowScore() { }
+
+        public User(string Username, string Password,List<Card> Stack, List<Card> Deck, int Coins)
+        {
+            this.Username = Username;
+            this.Password = Password;
+            this.Stack.AddRange(Stack);
+            this.Deck.AddRange(Deck);
+            this.Coins = Coins;
+        }
     }
 }
