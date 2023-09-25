@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace MonsterTradingCardsGame
 {
-    public enum EElementType
+    public enum DamageType
     {
         normal = 0, fire = 1, water = 2, earth = 3, air = 4
     }
-    public enum ECardType
+    public enum CardType
     {
         monster = 0, spell = 1
     }
@@ -18,66 +18,66 @@ namespace MonsterTradingCardsGame
     internal class Card
     {
         public string Name { get; }
-        public int Damage { get; }
-        public EElementType EType { get; }
-        public ECardType CType { get; }
+        public double Damage { get; }
+        public DamageType Element { get; }
+        public CardType Type { get; }
         public bool InStore { get; set; }
 
-        public int CalcDmg(EElementType EnemyEle, ECardType EnemyType)
+        public double CalcDmg(DamageType EnemyEle, CardType EnemyType)
         {
-            if (EnemyType != CType)
+            if (EnemyType != Type)
             {
-                int EffectiveDmg = 0;
-                switch (EType)
+                double EffectiveDmg = 0;
+                switch (Element)
                 {
-                    case EElementType.normal:
+                    case DamageType.normal:
                         switch (EnemyEle)
                         {
-                            case EElementType.normal: EffectiveDmg = Damage; break;
-                            case EElementType.fire: EffectiveDmg = Damage / 2; break;
-                            case EElementType.water: EffectiveDmg = Damage * 2; break;
-                            case EElementType.earth: EffectiveDmg = (int)(float)(Damage * 0.25); break;
-                            case EElementType.air: EffectiveDmg = (int)(float)(Damage * 0.75); break;
+                            case DamageType.normal: EffectiveDmg = Damage; break;
+                            case DamageType.fire: EffectiveDmg = Damage / 2; break;
+                            case DamageType.water: EffectiveDmg = Damage * 2; break;
+                            case DamageType.earth: EffectiveDmg = (Damage * 0.25); break;
+                            case DamageType.air: EffectiveDmg = (Damage * 0.75); break;
                         }
                         break;
-                    case EElementType.fire:
+                    case DamageType.fire:
                         switch (EnemyEle)
                         {
-                            case EElementType.normal: EffectiveDmg = Damage * 2; break;
-                            case EElementType.fire: EffectiveDmg = Damage; break;
-                            case EElementType.water: EffectiveDmg = Damage / 2; break;
-                            case EElementType.earth: EffectiveDmg = 0; break;
-                            case EElementType.air: EffectiveDmg = (int)(float)(Damage * 1.5); break;
+                            case DamageType.normal: EffectiveDmg = Damage * 2; break;
+                            case DamageType.fire: EffectiveDmg = Damage; break;
+                            case DamageType.water: EffectiveDmg = Damage / 2; break;
+                            case DamageType.earth: EffectiveDmg = 0; break;
+                            case DamageType.air: EffectiveDmg = (Damage * 1.5); break;
                         }
                         break;
-                    case EElementType.water:
+                    case DamageType.water:
                         switch (EnemyEle)
                         {
-                            case EElementType.normal: EffectiveDmg = Damage / 2; break;
-                            case EElementType.fire: EffectiveDmg = Damage * 2; break;
-                            case EElementType.water: EffectiveDmg = Damage; break;
-                            case EElementType.earth: EffectiveDmg = (int)(float)(Damage * 1.5); break;
-                            case EElementType.air: EffectiveDmg = (int)(float)(Damage * 0.75); break;
+                            case DamageType.normal: EffectiveDmg = Damage / 2; break;
+                            case DamageType.fire: EffectiveDmg = Damage * 2; break;
+                            case DamageType.water: EffectiveDmg = Damage; break;
+                            case DamageType.earth: EffectiveDmg = (Damage * 1.5); break;
+                            case DamageType.air: EffectiveDmg = (Damage * 0.75); break;
                         }
                         break;
-                    case EElementType.earth:
+                    case DamageType.earth:
                         switch (EnemyEle)
                         {
-                            case EElementType.normal: EffectiveDmg = (int)(float)(Damage * 1.75); break;
-                            case EElementType.fire: EffectiveDmg = Damage * 5; break;
-                            case EElementType.water: EffectiveDmg = (int)(float)(Damage * 0.75); break;
-                            case EElementType.earth: EffectiveDmg = Damage; break;
-                            case EElementType.air: EffectiveDmg = Damage * 2; break;
+                            case DamageType.normal: EffectiveDmg = (Damage * 1.75); break;
+                            case DamageType.fire: EffectiveDmg = Damage * 5; break;
+                            case DamageType.water: EffectiveDmg = (Damage * 0.75); break;
+                            case DamageType.earth: EffectiveDmg = Damage; break;
+                            case DamageType.air: EffectiveDmg = Damage * 2; break;
                         }
                         break;
-                    case EElementType.air:
+                    case DamageType.air:
                         switch (EnemyEle)
                         {
-                            case EElementType.normal: EffectiveDmg = (int)(float)(Damage * 1.5); break;
-                            case EElementType.fire: EffectiveDmg = (int)(float)(Damage * 0.75); break;
-                            case EElementType.water: EffectiveDmg = (int)(float)(Damage * 1.25); break;
-                            case EElementType.earth: EffectiveDmg = Damage / 2; break;
-                            case EElementType.air: EffectiveDmg = Damage; break;
+                            case DamageType.normal: EffectiveDmg = (Damage * 1.5); break;
+                            case DamageType.fire: EffectiveDmg = (Damage * 0.75); break;
+                            case DamageType.water: EffectiveDmg = (Damage * 1.25); break;
+                            case DamageType.earth: EffectiveDmg = Damage / 2; break;
+                            case DamageType.air: EffectiveDmg = Damage; break;
                         }
                         break;
                     default: EffectiveDmg = Damage; break;
@@ -86,12 +86,12 @@ namespace MonsterTradingCardsGame
             }
             return Damage;
         }
-        public Card(string Name, int Damage, EElementType EType, ECardType CType)
+        public Card(string Name, double Damage, DamageType Element, CardType Type)
         {
             this.Name = Name;
             this.Damage = Damage;
-            this.EType = EType;
-            this.CType = CType;
+            this.Element = Element;
+            this.Type = Type;
         }
     }
 }
