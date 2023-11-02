@@ -11,7 +11,7 @@ namespace MonsterTradingCardsGame
         Random Rand = new Random();
         private User PlayerOne;
         private User PlayerTwo;
-        
+
         public void Battle()
         {
             List<Card>? DeckOne = PlayerOne.Deck;
@@ -23,20 +23,20 @@ namespace MonsterTradingCardsGame
             double DamageOne;
             double DamageTwo;
             int GameCounter = 0;
-            while(DeckOne.Count!=0 && DeckTwo.Count!=0 && GameCounter < 100)
+            while (DeckOne.Count != 0 && DeckTwo.Count != 0 && GameCounter < 100)
             {
                 IndexOne = Rand.Next(DeckOne.Count);
                 IndexTwo = Rand.Next(DeckTwo.Count);
-                
+
                 CardOne = DeckOne[IndexOne];
                 CardTwo = DeckTwo[IndexTwo];
 
-                DamageOne = CardOne.CalcDmg(CardTwo.Element, CardTwo.Type);
-                DamageTwo = CardTwo.CalcDmg(CardOne.Element, CardOne.Type);
+                DamageOne = CardOne.CalcDmg(CardTwo);
+                DamageTwo = CardTwo.CalcDmg(CardOne);
 
-                if(DamageOne != DamageTwo)
+                if (DamageOne != DamageTwo)
                 {
-                    if(DamageOne > DamageTwo)
+                    if (DamageOne > DamageTwo)
                     {
                         DeckOne.Add(CardTwo);
                         DeckTwo.RemoveAt(IndexTwo);
@@ -49,8 +49,16 @@ namespace MonsterTradingCardsGame
                 }
                 GameCounter++;
             }
+            if (DeckOne.Count > DeckTwo.Count)
+            {
+                //player one wins
+            }
+            else
+            {
+                //player two wins
+            }
         }
-        public Game(User PlayerOne , User PlayerTwo)
+        public Game(User PlayerOne, User PlayerTwo)
         {
             this.PlayerOne = PlayerOne;
             this.PlayerTwo = PlayerTwo;
