@@ -40,7 +40,7 @@ namespace MonsterTradingCardsGame
                 case "Goblin": if (EnemyName == "Dragon") return 0; break;
                 case "Knight": if (EnemyType == CardType.spell && EnemyElement == DamageType.water) return 0; break;
                 case "Ork": if (EnemyName == "Wizard") return 0; break;
-                case "Dragon": if (EnemyName == "FireElve") return 0; break;
+                case "Dragon": if (EnemyName == "FireElf") return 0; break;
                 default:
                     break;
             }
