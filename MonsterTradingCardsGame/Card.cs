@@ -13,7 +13,7 @@ namespace MonsterTradingCardsGame
     }
     public enum CardType
     {
-        monster = 0, spell = 1
+        monster = 0, spell = 1, effect = 2
     }
 
     internal class Card
@@ -30,7 +30,12 @@ namespace MonsterTradingCardsGame
             CardType EnemyType = EnemyCard.Type;
             string EnemyName = EnemyCard.Name;
 
-            if(Type == CardType.spell && EnemyName == "Kraken")
+            if (Type == CardType.effect || EnemyCard.Type == CardType.effect)
+            {
+                return Damage;
+            }
+
+            if (Type == CardType.spell && EnemyName == "Kraken")
             {
                 return 0;
             }
