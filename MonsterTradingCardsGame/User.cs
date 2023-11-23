@@ -16,8 +16,9 @@ namespace MonsterTradingCardsGame
         public int Elo { get; }
         public int Wins { get; }
         public int Games { get; }
-        public void BuyPackage() { 
-            if(Coins > 5)
+        public void BuyPackage()
+        {
+            if (Coins > 5)
             {
                 for (int i = 0; i < 5; i++)
                 {
@@ -25,17 +26,18 @@ namespace MonsterTradingCardsGame
                 }
             }
         }
-        public void ManageCards(int StackCardNr, int DeckCardNr) {
+        public void ManageCards(int StackCardNr, int DeckCardNr)
+        {
 
-            if(StackCardNr < Stack?.Count)
+            if (StackCardNr < Stack?.Count)
             {
                 if (!Stack[StackCardNr].InStore)
                 {
-                    if(Deck?.Count < 5)
+                    if (Deck?.Count < 5)
                     {
                         Deck.Add(Stack[StackCardNr]);
                     }
-                    else if(DeckCardNr < Deck?.Count && DeckCardNr < 5)
+                    else if (DeckCardNr < Deck?.Count && DeckCardNr < 5)
                     {
                         Deck[DeckCardNr] = Stack[StackCardNr];
                     }
@@ -45,7 +47,7 @@ namespace MonsterTradingCardsGame
         public void ShowScore() { }
         public void UpdateScore() { }
 
-        public User(string Username, string Password,List<Card> Stack, List<Card> Deck, int Coins,int Elo, int Games, int Wins)
+        public User(string Username, string Password, List<Card> Stack, List<Card> Deck, int Coins, int Elo, int Games, int Wins)
         {
             this.Username = Username;
             this.Password = Password;

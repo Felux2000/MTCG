@@ -23,6 +23,8 @@ namespace MonsterTradingCardsGame
         public DamageType Element { get; }
         public CardType Type { get; }
         public bool InStore { get; set; }
+        public bool InDeck { get; set; }
+        public int Index { get; }
 
         public double CalcDmg(Card EnemyCard)
         {
@@ -111,12 +113,14 @@ namespace MonsterTradingCardsGame
             }
             return Damage;
         }
-        public Card(string Name, double Damage, DamageType Element, CardType Type)
+        public Card(string name, double damage, DamageType element, CardType type, bool inStore, bool inDeck, int index)
         {
-            this.Name = Name;
-            this.Damage = Damage;
-            this.Element = Element;
-            this.Type = Type;
+            Name = name;
+            Damage = damage;
+            Element = element;
+            Type = type;
+            InStore = inStore;
+            InDeck = inDeck;
         }
     }
 }
