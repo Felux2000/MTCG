@@ -38,7 +38,7 @@ namespace MonsterTradingCardsGame.Server
                 try
                 {
                     Socket clientSocket = ServerSocket.Accept();
-                    Thread clientThread = new Thread(() => ThreadFunc(AppController,clientSocket));
+                    Thread clientThread = new(() => ThreadFunc(AppController,clientSocket));
                     clientThread.Start();
                 }
                 catch (IOException e)
@@ -48,9 +48,9 @@ namespace MonsterTradingCardsGame.Server
             }
         }
         
-        private void ThreadFunc(AppController appController, Socket clientSocket)
+        private static void ThreadFunc(AppController appController, Socket clientSocket)
         {
-            new RequestHandler(appController, clientSocket);
+            _ = new RequestHandler(appController, clientSocket);
         }
 
     }

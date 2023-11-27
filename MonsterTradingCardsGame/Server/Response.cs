@@ -11,10 +11,10 @@ namespace MonsterTradingCardsGame.Server
 {
     internal class Response
     {
-        private int StatusCode;
-        private string StatusMessage;
-        private string ContentType;
-        private string Content;
+        public int StatusCode { get; set; }
+        public string StatusMessage { get; set; }
+        public string ContentType { get; set; }
+        public string Content { get; set; }
 
         public Response(HttpStatusCode httpStatus, string content)
         {
@@ -24,7 +24,7 @@ namespace MonsterTradingCardsGame.Server
             Content = content;
         }
 
-        private string build()
+        public string Build()
         {
             return ($"HTTP/2 {StatusCode} {StatusMessage}\r\nContent-Type: {ContentType}\r\nContent-Length: {Content.Length}\r\n\r\n{Content}");
         }

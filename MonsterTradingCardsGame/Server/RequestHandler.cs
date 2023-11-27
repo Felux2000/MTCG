@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
 using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Text;
@@ -11,8 +12,9 @@ namespace MonsterTradingCardsGame.Server
 {
     internal class RequestHandler
     {
-        private AppController AppController;
-        private Socket ClientSocket;
+        public AppController AppController { get; set; }
+        public Socket ClientSocket { get; set; }
+        public Stream? ClientStream { get; set; }
 
         public RequestHandler(AppController appController, Socket clientSocket)
         {
@@ -20,11 +22,12 @@ namespace MonsterTradingCardsGame.Server
             ClientSocket = clientSocket;
         }
 
-        public void run()
+        public void Run()
         {
             try
             {
-
+                ClientStream = new NetworkStream(ClientSocket);
+                SendResponse(new Request(ClientStream));
             }
             catch (IOException e)
             {
@@ -32,18 +35,42 @@ namespace MonsterTradingCardsGame.Server
             }
             finally
             {
-                closeRequest();
+                CloseRequest();
             }
         }
 
-        public void sendResponse()
+        public void SendResponse(Request request)
         {
-
+            Response response;
+            if (request.Path == null)
+            {
+                response = new Response(System.Net.HttpStatusCode.BadRequest, "Pathname was not set");
+            }
+            else
+            {
+                response = AppController.HandleRequest(request);
+            }
+            using (StreamWriter writer = new(ClientStream))
+            {
+                writer.Write(response.Build());
+            }
+            Console.WriteLine($"Thread {Thread.CurrentThread.Name}: Content: {response.Content}");
         }
 
-        public void closeRequest()
+        public void CloseRequest()
         {
-
+            try
+            {
+                if(ClientStream != null)
+                {
+                    ClientStream.Close();
+                    ClientStream.Close();
+                }
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine(e.StackTrace);
+            }
         }
     }
 }
