@@ -117,7 +117,7 @@ namespace MonsterTradingCardsGame.Server
             {
                 return splitLine[1].Split("?")[1];
             }
-            return "";
+            return string.Empty;
         }
 
         private static int GetContentLengthFromLine(string line)
@@ -133,7 +133,7 @@ namespace MonsterTradingCardsGame.Server
         private static string GetTokenFromLine(string line)
         {
             string[] splitline = line.Split(' ');
-            string token = "";
+            string token = string.Empty;
             for (int i = 0; i < splitline.Length; i++)
             {
                 if (splitline[i] == "Bearer")

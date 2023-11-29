@@ -8,11 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Server\NewFolder\" />
+    <Compile Remove="Server\NewFolder\**" />
+    <EmbeddedResource Remove="Server\NewFolder\**" />
+    <None Remove="Server\NewFolder\**" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Json.Net" Version="1.0.33" />
+    <PackageReference Include="Npgsql" Version="8.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
 

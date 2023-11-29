@@ -1,5 +1,4 @@
-﻿using MonsterTradingCardsGame.Controller;
-using MonsterTradingCardsGame.Services;
+﻿using MonsterTradingCardsGame.Services;
 using System.Data.SqlClient;
 
 namespace MonsterTradingCardsGame
@@ -8,10 +7,10 @@ namespace MonsterTradingCardsGame
     {
         static void Main(string[] args)
         {
-            AppController AppController = null;
+            Game Game;
             try
             {
-                AppController = new AppController(new DatabaseService().DbConnection);
+                Game = new Game(new DatabaseService().DbConnection);
             }
             catch (SqlException e)
             {

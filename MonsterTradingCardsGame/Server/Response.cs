@@ -26,7 +26,7 @@ namespace MonsterTradingCardsGame.Server
 
         public string Build()
         {
-            return ($"HTTP/2 {StatusCode} {StatusMessage}\r\nContent-Type: {ContentType}\r\nContent-Length: {Content.Length}\r\n\r\n{Content}");
+            return ($"HTTP/1.1 {StatusCode} {StatusMessage}\r\nContent-Type: {ContentType}\r\nContent-Length: {Content.Length}\r\n\r\n{Content}");
         }
     }
 }

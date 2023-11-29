@@ -18,6 +18,8 @@ namespace MonsterTradingCardsGame
 
     internal class Card
     {
+        public string CardID { get; set; }
+        public string UserID { get; set; }
         public string Name { get; }
         public double Damage { get; }
         public DamageType Element { get; }
@@ -26,7 +28,7 @@ namespace MonsterTradingCardsGame
         public bool InDeck { get; set; }
         public int Index { get; }
 
-        public double CalcDmg(Card EnemyCard)
+        public (double final, double raw) CalcDmg(Card EnemyCard)
         {
             DamageType EnemyElement = EnemyCard.Element;
             CardType EnemyType = EnemyCard.Type;
@@ -34,20 +36,20 @@ namespace MonsterTradingCardsGame
 
             if (Type == CardType.effect || EnemyCard.Type == CardType.effect)
             {
-                return Damage;
+                return (Damage, Damage);
             }
 
             if (Type == CardType.spell && EnemyName == "Kraken")
             {
-                return 0;
+                return (0, Damage);
             }
 
             switch (Name)
             {
-                case "Goblin": if (EnemyName == "Dragon") return 0; break;
-                case "Knight": if (EnemyType == CardType.spell && EnemyElement == DamageType.water) return 0; break;
-                case "Ork": if (EnemyName == "Wizard") return 0; break;
-                case "Dragon": if (EnemyName == "FireElf") return 0; break;
+                case "Goblin": if (EnemyName == "Dragon") return (0, Damage); ; ; break;
+                case "Knight": if (EnemyType == CardType.spell && EnemyElement == DamageType.water) return (0, Damage); ; ; break;
+                case "Ork": if (EnemyName == "Wizard") return (0, Damage); ; ; break;
+                case "Dragon": if (EnemyName == "FireElf") return (0, Damage); ; ; break;
                 default:
                     break;
             }
@@ -109,18 +111,26 @@ namespace MonsterTradingCardsGame
                         break;
                     default: EffectiveDmg = Damage; break;
                 }
-                return EffectiveDmg;
+                return (EffectiveDmg, Damage); ;
             }
-            return Damage;
+            return (Damage, Damage);
         }
-        public Card(string name, double damage, DamageType element, CardType type, bool inStore, bool inDeck, int index)
+        public Card(string cardID, string userID, string name, double damage, DamageType element, CardType type, bool inStore, bool inDeck, int index)
         {
+            CardID = cardID;
+            UserID = userID;
             Name = name;
             Damage = damage;
             Element = element;
             Type = type;
             InStore = inStore;
             InDeck = inDeck;
+            Index = index;
+        }
+
+        public string ShowCard()
+        {
+            return ($"{{ \"ID\": \"{CardID}\", \"Name\": \"{Name}\", \"Damage\": \"{Damage}\" }}");
         }
     }
 }

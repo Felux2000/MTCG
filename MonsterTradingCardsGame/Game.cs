@@ -1,150 +1,177 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.SqlClient;
+using MonsterTradingCardsGame.Server;
+using System.Net.Mime;
+using System.Text.RegularExpressions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MonsterTradingCardsGame
 {
     internal class Game
     {
-        Random Rand = new Random();
-        private User PlayerOne;
-        private User PlayerTwo;
-        private const int EffectDuration = 2;
-        private Dictionary<string, double> _effectDamage;
-        private Dictionary<string, int> _effectDurationOne;
-        private Dictionary<string, int> _effectDurationTwo;
-        private double _dmgMultiplierOne;
-        private double _dmgMultiplierTwo;
-        public void Battle()
+        public SqlConnection DbConnection { get; set; }
+        public Game(SqlConnection dbConnection)
         {
-            List<Card>? DeckOne = PlayerOne.Deck;
-            List<Card>? DeckTwo = PlayerTwo.Deck;
-            Card? CardOne;
-            Card? CardTwo;
-            int IndexOne;
-            int IndexTwo;
-            int GameCounter = 0;
-            while (DeckOne.Count != 0 && DeckTwo.Count != 0 && GameCounter < 100)
-            {
-                double DamageOne;
-                double DamageTwo;
-                IndexOne = Rand.Next(DeckOne.Count);
-                IndexTwo = Rand.Next(DeckTwo.Count);
-
-                CardOne = DeckOne[IndexOne];
-                CardTwo = DeckTwo[IndexTwo];
-
-                DamageOne = CardOne.CalcDmg(CardTwo);
-                if (CardOne.Type == CardType.effect)
-                {
-
-                    _effectDamage[CardOne.Name] = DamageOne;
-
-                    if (_effectDurationOne.ContainsKey(CardOne.Name))
-                    {
-                        _effectDurationOne[CardOne.Name] += EffectDuration;
-                    }
-                    else
-                    {
-                        _effectDurationOne[CardOne.Name] = EffectDuration;
-                    }
-                    DamageOne = 0;
-                }
-                DamageTwo = CardTwo.CalcDmg(CardOne);
-                if (CardTwo.Type == CardType.effect)
-                {
-
-                    _effectDamage[CardTwo.Name] = DamageTwo;
-
-                    if (_effectDurationOne.ContainsKey(CardTwo.Name))
-                    {
-                        _effectDurationTwo[CardTwo.Name] += EffectDuration;
-                    }
-                    else
-                    {
-                        _effectDurationTwo[CardTwo.Name] = EffectDuration;
-                    }
-                    DamageOne = 0;
-                }
-
-
-                CalculateDamageMultipliers();
-                if (DamageOne != DamageTwo)
-                {
-                    if (DamageOne > DamageTwo)
-                    {
-                        DeckOne.Add(CardTwo);
-                        DeckTwo.RemoveAt(IndexTwo);
-                    }
-                    else
-                    {
-                        DeckTwo.Add(CardOne);
-                        DeckOne.RemoveAt(IndexOne);
-                    }
-                }
-                DecreaseEffectDurations();
-                GameCounter++;
-            }
-            if (DeckOne.Count > DeckTwo.Count)
-            {
-                //player one wins
-            }
-            else
-            {
-                //player two wins
-            }
+            DbConnection = dbConnection;
         }
 
-        private void CalculateDamageMultipliers()
+        public Response HandleRequest(Request request)
         {
-            _dmgMultiplierOne = 1;
-            foreach (KeyValuePair<string, int> effect in _effectDurationOne)
+            switch (request.HttpMethod)
             {
-                if (effect.Value != 0)
-                {
-                    _dmgMultiplierOne *= _effectDamage[effect.Key];
-                }
-            }
+                case Method.GET:
+                    {
+                        if (request.AuthToken == null)
+                        {
+                            return new Response(System.Net.HttpStatusCode.Unauthorized, "{ \"error\": \"No Token set\", \"data\": null }");
+                        }
+                        string[] splitPath = request.Path.Split('/');
+                        //get cards from user
+                        switch (request.Path)
+                        {
+                            case "/cards":
+                                return;//CardController needed
+                            case "/decks":
+                                return;//CardController needed
+                            case "/users":
+                                return;//UserController needed
+                            case "/stats":
+                                return;//UserController needed
+                            case "/scores":
+                                return;//UserController needed
+                            case "/tradings":
+                                return;//TradinController needed
+                        }
+                        if (Regex.IsMatch(request.Path, "/users/[a-zA-Z]+"))
+                        {
+                            if (CompareAuthTokenToUser(request.AuthToken, GetUsernameFromPath(splitPath)))
+                            {
+                                return; //UserCOntroller needed
+                            }
+                            return new Response(System.Net.HttpStatusCode.Forbidden, "{ \"error\": \"Incorrect Token\", \"data\": null }");
+                        }
+                        break;
+                    }
+                case Method.POST:
+                    {
+                        switch (request.Path)
+                        {
+                            case "/packages":
+                                if (CompareAuthTokenToUser(request.AuthToken, GetUsernameFromPath(splitPath)))
+                                {
+                                    return;//CardController needed
+                                }
+                                return new Response(System.Net.HttpStatusCode.Forbidden, "{ \"error\": \"Incorrect Token\", \"data\": null }");
+                            case "/transaction/packages":
+                                return;//CardController needed
+                            case "/users":
+                                return;//UserController needed
+                            case "/sessions":
+                                return;//UserController needed
+                            case "/tradings":
+                                return;//TradinController needed
+                            case "/battles":
+                                return;//BattleController needed
+                        }
+                        if (Regex.IsMatch(request.Path, "/tradings/([A-Za-z0-9]+(-[A-Za-z0-9]+)+)"))
+                        {
+                            string[] splitPath = request.Path.Split('/');
+                            if (request.AuthToken == null)
+                            {
+                                return new Response(System.Net.HttpStatusCode.Unauthorized, "{ \"error\": \"No Token set\", \"data\": null }");
+                            }
+                            return;//Tradingcontroller needed
+                        }
 
-            _dmgMultiplierTwo = 1;
-            foreach (KeyValuePair<string, int> effect in _effectDurationTwo)
-            {
-                if (effect.Value != 0)
-                {
-                    _dmgMultiplierTwo *= _effectDamage[effect.Key];
-                }
+                        break;
+                    }
+                case Method.PUT:
+                    {
+                        string[] splitPath = request.Path.Split('/');
+                        if (request.Path == "/decks")
+                        {
+                            if (request.AuthToken == null)
+                            {
+                                return new Response(System.Net.HttpStatusCode.Unauthorized, "{ \"error\": \"No Token set\", \"data\": null }");
+                            }
+                            return; //CardController needed
+                        }
+                        else if (Regex.IsMatch(request.Path, "/users/[a-zA-Z]+"))
+                        {
+                            if (CompareAuthTokenToUser(request.AuthToken, GetUsernameFromPath(splitPath)))
+                            {
+                                return; //UserCOntroller needed
+                            }
+                            return new Response(System.Net.HttpStatusCode.Forbidden, "{ \"error\": \"Incorrect Token\", \"data\": null }");
+                        }
+                        break;
+                    }
+                case Method.DELETE:
+                    {
+                        string[] splitPath = request.Path.Split('/');
+                        if (request.AuthToken == null)
+                        {
+                            return new Response(System.Net.HttpStatusCode.Unauthorized, "{ \"error\": \"No Token set\", \"data\": null }");
+                        }
+                        if (Regex.IsMatch(request.Path, "/users/[a-zA-Z]+"))
+                        {
+                            if (CompareAuthTokenToUser(request.AuthToken, GetUsernameFromPath(splitPath)))
+                            {
+                                return; //UserCOntroller needed
+                            }
+                            return new Response(System.Net.HttpStatusCode.Forbidden, "{ \"error\": \"Incorrect Token\", \"data\": null }");
+                        }
+                        else if (Regex.IsMatch(request.Path, "/users/[a-zA-Z]+"))
+                        {
+                            return; //TradingController needed
+                        }
+                        break;
+                    }
             }
+            return new Response(System.Net.HttpStatusCode.NotFound, "{ \"error\": \"Method Not Found\", \"data\": null }");
         }
 
-        private void DecreaseEffectDurations()
+        public static string GetUsernameFromPath(string[] split)
         {
-            foreach (KeyValuePair<string, int> effect in _effectDurationOne)
+            //get username if in path
+            if (split == null)
             {
-                if (effect.Value != 0)
-                {
-                    _effectDurationOne[effect.Key] -= -1;
-                }
+                throw new ArgumentNullException("Path is null");
             }
-            foreach (KeyValuePair<string, int> effect in _effectDurationTwo)
+            //username always last
+            int length = split.Length;
+            if (length < 2)
             {
-                if (effect.Value != 0)
-                {
-                    _effectDurationTwo[effect.Key] -= -1;
-                }
+                //path incomplete/too short to contain username
+                throw new ArgumentException("Path incomplete");
             }
+            return split[length - 1];
+        }
+        public static string GetUsernameFromToken(string auth)
+        {
+            //extract username from token
+            if (auth == null)
+            {
+                throw new ArgumentNullException("AuthToken is null");
+            }
+            string[] splitAuth = auth.Split("-");
+            return splitAuth[0];
+        }
+        public static bool CompareAuthTokenToUser(string auth, string username)
+        {
+            //auth == username-mtcgToken
+            if (auth == null)
+            {
+                throw new ArgumentNullException("AuthToken is null");
+            }
+            string[] splitAuth = auth.Split("-");
+            return splitAuth[0] == username;
         }
 
-        public Game(User PlayerOne, User PlayerTwo)
-        {
-            this.PlayerOne = PlayerOne;
-            this.PlayerTwo = PlayerTwo;
-        }
-
-        private enum Winner
-        {
-            none = 0, playerOne = 1, playerTwo = 2
-        }
     }
 }

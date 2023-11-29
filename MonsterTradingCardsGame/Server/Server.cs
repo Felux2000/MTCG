@@ -1,5 +1,4 @@
-﻿using MonsterTradingCardsGame.Controller;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -17,10 +16,10 @@ namespace MonsterTradingCardsGame.Server
             ProtocolType.Tcp
             );
         private int Port;
-        private AppController AppController;
-        public Server(AppController appController, int port)
+        private Game Game;
+        public Server(Game game, int port)
         {
-            AppController = appController;
+            Game = game;
             Port = port;
         }
 
@@ -38,7 +37,7 @@ namespace MonsterTradingCardsGame.Server
                 try
                 {
                     Socket clientSocket = ServerSocket.Accept();
-                    Thread clientThread = new(() => ThreadFunc(AppController,clientSocket));
+                    Thread clientThread = new(() => ThreadFunc(Game, clientSocket));
                     clientThread.Start();
                 }
                 catch (IOException e)
@@ -47,10 +46,10 @@ namespace MonsterTradingCardsGame.Server
                 }
             }
         }
-        
-        private static void ThreadFunc(AppController appController, Socket clientSocket)
+
+        private static void ThreadFunc(Game game, Socket clientSocket)
         {
-            _ = new RequestHandler(appController, clientSocket);
+            _ = new RequestHandler(game, clientSocket);
         }
 
     }

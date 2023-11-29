@@ -1,5 +1,4 @@
-﻿using MonsterTradingCardsGame.Controller;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mime;
@@ -12,13 +11,13 @@ namespace MonsterTradingCardsGame.Server
 {
     internal class RequestHandler
     {
-        public AppController AppController { get; set; }
+        public Game Game { get; set; }
         public Socket ClientSocket { get; set; }
         public Stream? ClientStream { get; set; }
 
-        public RequestHandler(AppController appController, Socket clientSocket)
+        public RequestHandler(Game game, Socket clientSocket)
         {
-            AppController = appController;
+            Game = game;
             ClientSocket = clientSocket;
         }
 
@@ -48,7 +47,7 @@ namespace MonsterTradingCardsGame.Server
             }
             else
             {
-                response = AppController.HandleRequest(request);
+                response = Game.HandleRequest(request);
             }
             using (StreamWriter writer = new(ClientStream))
             {
@@ -61,7 +60,7 @@ namespace MonsterTradingCardsGame.Server
         {
             try
             {
-                if(ClientStream != null)
+                if (ClientStream != null)
                 {
                     ClientStream.Close();
                     ClientStream.Close();

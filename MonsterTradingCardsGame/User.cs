@@ -8,6 +8,7 @@ namespace MonsterTradingCardsGame
 {
     internal class User
     {
+        public int UserID { get; set; }
         public string Username { get; }
         public string Password { get; }
         public List<Card> Stack { get; set; }
@@ -15,8 +16,12 @@ namespace MonsterTradingCardsGame
         public int Coins { get; set; }
         public int Elo { get; }
         public int Wins { get; }
-        public int Games { get; }
-        public void BuyPackage()
+        public int GamesPlayed { get; }
+        public string Bio { get; set; }
+        public string Image { get; set; }
+        public string AuthToken { get; set; }
+
+        /*public void BuyPackage()
         {
             if (Coins > 5)
             {
@@ -44,7 +49,6 @@ namespace MonsterTradingCardsGame
                 }
             }
         }
-        public void ShowScore() { }
         public void UpdateScore() { }
 
         public User(string Username, string Password, List<Card> Stack, List<Card> Deck, int Coins, int Elo, int Games, int Wins)
@@ -60,5 +64,49 @@ namespace MonsterTradingCardsGame
             this.Games = Games;
             this.Wins = Wins;
         }
+        */
+
+        //new user
+        public User(string username, string password)
+        {
+            Username = username;
+            Password = password;
+            Coins = 20;
+            Elo = 1000;
+            GamesPlayed = 1000;
+            Bio = string.Empty;
+            Image = string.Empty;
+            AuthToken = string.Empty;
+            Deck = new List<Card>();
+            Stack = new List<Card>();
+        }
+        //existing user
+        public User(int userID, string username, int coins, int elo, int gamesPlayed, List<Card> deck, List<Card> stack, string bio, string image, string authToken)
+        {
+            UserID = userID;
+            Username = username;
+            Password = string.Empty;
+            Coins = coins;
+            Elo = elo;
+            GamesPlayed = gamesPlayed;
+            Deck = deck;
+            Stack = stack;
+            Bio = bio;
+            Image = image;
+            AuthToken = authToken;
+        }
+        public string ShowData()
+        {
+            return ($"{{ \"Username\": \"{Username}\", \"Bio\": \"{Bio}\", \"Image\": \"{Image}\" }}");
+        }
+        public string ShowElo()
+        {
+            return ($"{{ \"Username\": \"{Username}\", \"Elo\": \"{Elo}\" }}");
+        }
+        public string ShowStats()
+        {
+            return ($"Elo: {Elo}\nWins: {Wins}\nLosses: {GamesPlayed - Wins}\n");
+        }
+
     }
 }
