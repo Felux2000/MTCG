@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MonsterTradingCardsGame.Server
 {
-    internal class Server
+    internal class mtcgServer
     {
         private Socket ServerSocket = new Socket(
             AddressFamily.InterNetwork,
@@ -17,7 +17,7 @@ namespace MonsterTradingCardsGame.Server
             );
         private int Port;
         private Game Game;
-        public Server(Game game, int port)
+        public mtcgServer(Game game, int port)
         {
             Game = game;
             Port = port;
@@ -36,7 +36,9 @@ namespace MonsterTradingCardsGame.Server
             {
                 try
                 {
+                    Console.WriteLine("Waiting for client...");
                     Socket clientSocket = ServerSocket.Accept();
+                    Console.WriteLine("Client connected" + clientSocket.RemoteEndPoint);
                     Thread clientThread = new(() => ThreadFunc(Game, clientSocket));
                     clientThread.Start();
                 }

@@ -8,11 +8,10 @@ namespace MonsterTradingCardsGame
 {
     internal class User
     {
-        public int UserID { get; set; }
         public string Username { get; }
         public string Password { get; }
-        public List<Card> Stack { get; set; }
-        public List<Card> Deck { get; set; }
+        public List<Card>? Stack { get; set; }
+        public List<Card>? Deck { get; set; }
         public int Coins { get; set; }
         public int Elo { get; }
         public int Wins { get; }
@@ -81,9 +80,8 @@ namespace MonsterTradingCardsGame
             Stack = new List<Card>();
         }
         //existing user
-        public User(int userID, string username, int coins, int elo, int gamesPlayed, List<Card> deck, List<Card> stack, string bio, string image, string authToken)
+        public User(string username, int coins, int elo, int gamesPlayed, List<Card> deck, List<Card> stack, string bio, string image, string authToken)
         {
-            UserID = userID;
             Username = username;
             Password = string.Empty;
             Coins = coins;
@@ -95,6 +93,20 @@ namespace MonsterTradingCardsGame
             Image = image;
             AuthToken = authToken;
         }
+
+
+        public User(string username, int coins, int elo, int gamesPlayed, string bio, string image, string authToken)
+        {
+            Username = username;
+            Password = string.Empty;
+            Coins = coins;
+            Elo = elo;
+            GamesPlayed = gamesPlayed;
+            Bio = bio;
+            Image = image;
+            AuthToken = authToken;
+        }
+
         public string ShowData()
         {
             return ($"{{ \"Username\": \"{Username}\", \"Bio\": \"{Bio}\", \"Image\": \"{Image}\" }}");

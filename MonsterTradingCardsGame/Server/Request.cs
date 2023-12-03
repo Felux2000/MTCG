@@ -26,6 +26,7 @@ namespace MonsterTradingCardsGame.Server
             {"PUT" ,Method.PUT},
             {"DELETE" ,Method.DELETE}
         };
+
         public Method? HttpMethod { get; set; }
         public string? Path { get; set; }
         public string? Params { get; set; }
@@ -48,7 +49,7 @@ namespace MonsterTradingCardsGame.Server
             try
             {
                 string? line;
-                using (StreamReader reader = new(inputStream))
+                using (StreamReader reader = new(inputStream, leaveOpen: true))
                 {
                     if ((line = reader.ReadLine()) != null)
                     {
@@ -58,9 +59,8 @@ namespace MonsterTradingCardsGame.Server
                         Path = GetPathFromLine(splitLine);
                         Params = GetParamsFromLine(splitLine);
 
-                        while ((line = reader.ReadLine()) != null)
+                        while ((line = reader.ReadLine()) != string.Empty)
                         {
-
                             if (line.StartsWith(PHContentLength))
                             {
                                 ContentLength = GetContentLengthFromLine(line);
@@ -88,6 +88,12 @@ namespace MonsterTradingCardsGame.Server
                             }
                         }
                     }
+                    Console.WriteLine(HttpMethod);
+                    Console.WriteLine(Path);
+                    Console.WriteLine(Params);
+                    Console.WriteLine(ContentType);
+                    Console.WriteLine(ContentLength);
+                    Console.WriteLine(Body);
 
                 }
             }

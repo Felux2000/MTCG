@@ -18,7 +18,7 @@ namespace MonsterTradingCardsGame.Daos
 
         public void Create(User user)
         {
-            string query = "INSERT INTO users (Username, Password, Coins, Elo, Games, Bio, Image, AuthToken) VALUES (@username,@password,@coins,@elo,@games,@bio,@image,authtoken)";
+            string query = "INSERT INTO \"users\" (username, password, coins, elo, games, bio, image, token) VALUES (@username,@password,@coins,@elo,@games,@bio,@image,@authtoken)";
             using (var cmd = DbConnection.CreateCommand(query))
             {
                 cmd.Parameters.AddWithValue("username", user.Username);
@@ -31,6 +31,35 @@ namespace MonsterTradingCardsGame.Daos
                 cmd.Parameters.AddWithValue("authtoken", user.AuthToken);
                 cmd.ExecuteNonQuery();
             }
+        }
+
+        public List<User> ReadAll()
+        {
+            List<User> userList = new List<User>();
+            string query = "SELECT * FROM users;";
+            using (var cmd = DbConnection.CreateCommand(query))
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    User tmpUser = new(
+                        reader.GetString(0),
+                        reader.GetInt32(2),
+                        reader.GetInt32(3),
+                        reader.GetInt32(4),
+                        reader.GetString(5),
+                        reader.GetString(6),
+                        reader.GetString(7)
+                        );
+                    userList.Add(tmpUser);
+                }
+            }
+            return userList;
+        }
+
+        public bool CheckAuthToken(string authToken)
+        {
+            return false;
         }
     }
 }

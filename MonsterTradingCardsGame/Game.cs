@@ -6,135 +6,139 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
 using MonsterTradingCardsGame.Server;
-using System.Net.Mime;
 using System.Text.RegularExpressions;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Npgsql;
 
 namespace MonsterTradingCardsGame
 {
     internal class Game
     {
-        public SqlConnection DbConnection { get; set; }
-        public Game(SqlConnection dbConnection)
+        public NpgsqlDataSource DbConnection { get; set; }
+        public Game(NpgsqlDataSource dbConnection)
         {
             DbConnection = dbConnection;
         }
 
         public Response HandleRequest(Request request)
-        {
-            switch (request.HttpMethod)
-            {
-                case Method.GET:
+        { return new Response(System.Net.HttpStatusCode.Accepted, ContentType.JSON, "test"); }
+        /*
+                public Response HandleRequest(Request request)
+                {
+                    switch (request.HttpMethod)
                     {
-                        if (request.AuthToken == null)
-                        {
-                            return new Response(System.Net.HttpStatusCode.Unauthorized, "{ \"error\": \"No Token set\", \"data\": null }");
-                        }
-                        string[] splitPath = request.Path.Split('/');
-                        //get cards from user
-                        switch (request.Path)
-                        {
-                            case "/cards":
-                                return;//CardController needed
-                            case "/decks":
-                                return;//CardController needed
-                            case "/users":
-                                return;//UserController needed
-                            case "/stats":
-                                return;//UserController needed
-                            case "/scores":
-                                return;//UserController needed
-                            case "/tradings":
-                                return;//TradinController needed
-                        }
-                        if (Regex.IsMatch(request.Path, "/users/[a-zA-Z]+"))
-                        {
-                            if (CompareAuthTokenToUser(request.AuthToken, GetUsernameFromPath(splitPath)))
+                        case Method.GET:
                             {
-                                return; //UserCOntroller needed
-                            }
-                            return new Response(System.Net.HttpStatusCode.Forbidden, "{ \"error\": \"Incorrect Token\", \"data\": null }");
-                        }
-                        break;
-                    }
-                case Method.POST:
-                    {
-                        switch (request.Path)
-                        {
-                            case "/packages":
-                                if (CompareAuthTokenToUser(request.AuthToken, GetUsernameFromPath(splitPath)))
+                                if (request.AuthToken == null)
                                 {
-                                    return;//CardController needed
+                                    return new Response(System.Net.HttpStatusCode.Unauthorized, "{ \"error\": \"No Token set\", \"data\": null }");
                                 }
-                                return new Response(System.Net.HttpStatusCode.Forbidden, "{ \"error\": \"Incorrect Token\", \"data\": null }");
-                            case "/transaction/packages":
-                                return;//CardController needed
-                            case "/users":
-                                return;//UserController needed
-                            case "/sessions":
-                                return;//UserController needed
-                            case "/tradings":
-                                return;//TradinController needed
-                            case "/battles":
-                                return;//BattleController needed
-                        }
-                        if (Regex.IsMatch(request.Path, "/tradings/([A-Za-z0-9]+(-[A-Za-z0-9]+)+)"))
-                        {
-                            string[] splitPath = request.Path.Split('/');
-                            if (request.AuthToken == null)
-                            {
-                                return new Response(System.Net.HttpStatusCode.Unauthorized, "{ \"error\": \"No Token set\", \"data\": null }");
+                                string[] splitPath = request.Path.Split('/');
+                                //get cards from user
+                                switch (request.Path)
+                                {
+                                    case "/cards":
+                                        return;//CardController needed
+                                    case "/decks":
+                                        return;//CardController needed
+                                    case "/users":
+                                        return;//UserController needed
+                                    case "/stats":
+                                        return;//UserController needed
+                                    case "/scores":
+                                        return;//UserController needed
+                                    case "/tradings":
+                                        return;//TradinController needed
+                                }
+                                if (Regex.IsMatch(request.Path, "/users/[a-zA-Z]+"))
+                                {
+                                    if (CompareAuthTokenToUser(request.AuthToken, GetUsernameFromPath(splitPath)))
+                                    {
+                                        return; //UserCOntroller needed
+                                    }
+                                    return new Response(System.Net.HttpStatusCode.Forbidden, "{ \"error\": \"Incorrect Token\", \"data\": null }");
+                                }
+                                break;
                             }
-                            return;//Tradingcontroller needed
-                        }
+                        case Method.POST:
+                            {
+                                switch (request.Path)
+                                {
+                                    case "/packages":
+                                        if (CompareAuthTokenToUser(request.AuthToken, GetUsernameFromPath(splitPath)))
+                                        {
+                                            return;//CardController needed
+                                        }
+                                        return new Response(System.Net.HttpStatusCode.Forbidden, "{ \"error\": \"Incorrect Token\", \"data\": null }");
+                                    case "/transaction/packages":
+                                        return;//CardController needed
+                                    case "/users":
+                                        return;//UserController needed
+                                    case "/sessions":
+                                        return;//UserController needed
+                                    case "/tradings":
+                                        return;//TradinController needed
+                                    case "/battles":
+                                        return;//BattleController needed
+                                }
+                                if (Regex.IsMatch(request.Path, "/tradings/([A-Za-z0-9]+(-[A-Za-z0-9]+)+)"))
+                                {
+                                    string[] splitPath = request.Path.Split('/');
+                                    if (request.AuthToken == null)
+                                    {
+                                        return new Response(System.Net.HttpStatusCode.Unauthorized, "{ \"error\": \"No Token set\", \"data\": null }");
+                                    }
+                                    return;//Tradingcontroller needed
+                                }
 
-                        break;
-                    }
-                case Method.PUT:
-                    {
-                        string[] splitPath = request.Path.Split('/');
-                        if (request.Path == "/decks")
-                        {
-                            if (request.AuthToken == null)
-                            {
-                                return new Response(System.Net.HttpStatusCode.Unauthorized, "{ \"error\": \"No Token set\", \"data\": null }");
+                                break;
                             }
-                            return; //CardController needed
-                        }
-                        else if (Regex.IsMatch(request.Path, "/users/[a-zA-Z]+"))
-                        {
-                            if (CompareAuthTokenToUser(request.AuthToken, GetUsernameFromPath(splitPath)))
+                        case Method.PUT:
                             {
-                                return; //UserCOntroller needed
+                                string[] splitPath = request.Path.Split('/');
+                                if (request.Path == "/decks")
+                                {
+                                    if (request.AuthToken == null)
+                                    {
+                                        return new Response(System.Net.HttpStatusCode.Unauthorized, "{ \"error\": \"No Token set\", \"data\": null }");
+                                    }
+                                    return; //CardController needed
+                                }
+                                else if (Regex.IsMatch(request.Path, "/users/[a-zA-Z]+"))
+                                {
+                                    if (CompareAuthTokenToUser(request.AuthToken, GetUsernameFromPath(splitPath)))
+                                    {
+                                        return; //UserCOntroller needed
+                                    }
+                                    return new Response(System.Net.HttpStatusCode.Forbidden, "{ \"error\": \"Incorrect Token\", \"data\": null }");
+                                }
+                                break;
                             }
-                            return new Response(System.Net.HttpStatusCode.Forbidden, "{ \"error\": \"Incorrect Token\", \"data\": null }");
-                        }
-                        break;
-                    }
-                case Method.DELETE:
-                    {
-                        string[] splitPath = request.Path.Split('/');
-                        if (request.AuthToken == null)
-                        {
-                            return new Response(System.Net.HttpStatusCode.Unauthorized, "{ \"error\": \"No Token set\", \"data\": null }");
-                        }
-                        if (Regex.IsMatch(request.Path, "/users/[a-zA-Z]+"))
-                        {
-                            if (CompareAuthTokenToUser(request.AuthToken, GetUsernameFromPath(splitPath)))
+                        case Method.DELETE:
                             {
-                                return; //UserCOntroller needed
+                                string[] splitPath = request.Path.Split('/');
+                                if (request.AuthToken == null)
+                                {
+                                    return new Response(System.Net.HttpStatusCode.Unauthorized, "{ \"error\": \"No Token set\", \"data\": null }");
+                                }
+                                if (Regex.IsMatch(request.Path, "/users/[a-zA-Z]+"))
+                                {
+                                    if (CompareAuthTokenToUser(request.AuthToken, GetUsernameFromPath(splitPath)))
+                                    {
+                                        return; //UserCOntroller needed
+                                    }
+                                    return new Response(System.Net.HttpStatusCode.Forbidden, "{ \"error\": \"Incorrect Token\", \"data\": null }");
+                                }
+                                else if (Regex.IsMatch(request.Path, "/users/[a-zA-Z]+"))
+                                {
+                                    return; //TradingController needed
+                                }
+                                break;
                             }
-                            return new Response(System.Net.HttpStatusCode.Forbidden, "{ \"error\": \"Incorrect Token\", \"data\": null }");
-                        }
-                        else if (Regex.IsMatch(request.Path, "/users/[a-zA-Z]+"))
-                        {
-                            return; //TradingController needed
-                        }
-                        break;
                     }
-            }
-            return new Response(System.Net.HttpStatusCode.NotFound, "{ \"error\": \"Method Not Found\", \"data\": null }");
-        }
+                    return new Response(System.Net.HttpStatusCode.NotFound, "{ \"error\": \"Method Not Found\", \"data\": null }");
+                }
+        */
 
         public static string GetUsernameFromPath(string[] split)
         {

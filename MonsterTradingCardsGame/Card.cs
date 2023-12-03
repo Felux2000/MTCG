@@ -19,7 +19,6 @@ namespace MonsterTradingCardsGame
     internal class Card
     {
         public string CardID { get; set; }
-        public string UserID { get; set; }
         public string Name { get; }
         public double Damage { get; }
         public DamageType Element { get; }
@@ -115,10 +114,9 @@ namespace MonsterTradingCardsGame
             }
             return (Damage, Damage);
         }
-        public Card(string cardID, string userID, string name, double damage, DamageType element, CardType type, bool inStore, bool inDeck, int index)
+        public Card(string cardID, string name, double damage, DamageType element, CardType type, bool inStore, bool inDeck, int index)
         {
             CardID = cardID;
-            UserID = userID;
             Name = name;
             Damage = damage;
             Element = element;

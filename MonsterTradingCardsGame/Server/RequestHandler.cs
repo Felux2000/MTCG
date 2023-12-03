@@ -19,6 +19,7 @@ namespace MonsterTradingCardsGame.Server
         {
             Game = game;
             ClientSocket = clientSocket;
+            Run();
         }
 
         public void Run()
@@ -40,10 +41,11 @@ namespace MonsterTradingCardsGame.Server
 
         public void SendResponse(Request request)
         {
+            Console.Write("Request finished");
             Response response;
             if (request.Path == null)
             {
-                response = new Response(System.Net.HttpStatusCode.BadRequest, "Pathname was not set");
+                response = new Response(System.Net.HttpStatusCode.BadRequest,ContentType.JSON, "Pathname was not set");
             }
             else
             {
