@@ -14,7 +14,7 @@ namespace MonsterTradingCardsGame.Controller
     internal class Controller
     {
         NpgsqlDataSource DbConnection;
-        UserDao userDao;
+        protected UserDao userDao;
         public Controller(NpgsqlDataSource dbConnection)
         {
             DbConnection = dbConnection;
@@ -35,11 +35,11 @@ namespace MonsterTradingCardsGame.Controller
             }
             if (contetnType == ContentType.JSON)
             {
-                return new(statusCode, ContentType.JSON, $"{{ \"data\": \"{data}\", \"error\": {error} }}\n");
+                return new(statusCode, ContentType.JSON, $"{{ \"data\": {data}, \"error\": {error} }}\n");
             }
             else
             {
-                return new(statusCode, ContentType.JSON, $"{data}error: {error} \n");
+                return new(statusCode, ContentType.JSON, $"{data} error: {error} \n");
             }
         }
     }

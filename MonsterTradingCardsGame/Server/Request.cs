@@ -76,6 +76,7 @@ namespace MonsterTradingCardsGame.Server
                         }
                     }
 
+
                     if (HttpMethod == Method.POST || HttpMethod == Method.PUT)
                     {
                         if (ContentLength != null)
@@ -83,18 +84,23 @@ namespace MonsterTradingCardsGame.Server
                             int readByte;
                             for (int i = 0; i < ContentLength; i++)
                             {
-                                readByte = inputStream.ReadByte();
-                                Body = $"{Body}{readByte}";
+                                readByte = reader.Read();
+                                if (readByte == -1)
+                                {
+                                    break;
+                                }
+                                Body = $"{Body}{(char)readByte}";
+
                             }
                         }
                     }
+
                     Console.WriteLine(HttpMethod);
                     Console.WriteLine(Path);
                     Console.WriteLine(Params);
                     Console.WriteLine(ContentType);
                     Console.WriteLine(ContentLength);
                     Console.WriteLine(Body);
-
                 }
             }
             catch (IOException e)

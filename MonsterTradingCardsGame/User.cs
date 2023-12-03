@@ -8,13 +8,13 @@ namespace MonsterTradingCardsGame
 {
     internal class User
     {
-        public string Username { get; }
+        public string Username { get; set; }
         public string Password { get; }
         public List<Card>? Stack { get; set; }
         public List<Card>? Deck { get; set; }
         public int Coins { get; set; }
-        public int Elo { get; }
-        public int Wins { get; }
+        public int Elo { get; set; }
+        public int Wins { get; set; }
         public int GamesPlayed { get; }
         public string Bio { get; set; }
         public string Image { get; set; }
@@ -117,7 +117,7 @@ namespace MonsterTradingCardsGame
         }
         public string ShowStats()
         {
-            return ($"Elo: {Elo}\nWins: {Wins}\nLosses: {GamesPlayed - Wins}\n");
+            return ($"{{ \"Name\": \"{Username}\", \"Elo\": \"{Elo}\", \"Wins\": \"{Wins}\", \"Losses\": \"{GamesPlayed - Wins}\"}}");
         }
 
     }

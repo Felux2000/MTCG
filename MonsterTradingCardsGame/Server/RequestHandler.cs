@@ -33,19 +33,15 @@ namespace MonsterTradingCardsGame.Server
             {
                 Console.WriteLine(e.StackTrace);
             }
-            finally
-            {
-                CloseRequest();
-            }
+            CloseRequest();
         }
 
         public void SendResponse(Request request)
         {
-            Console.Write("Request finished");
             Response response;
             if (request.Path == null)
             {
-                response = new Response(System.Net.HttpStatusCode.BadRequest,ContentType.JSON, "Pathname was not set");
+                response = new Response(System.Net.HttpStatusCode.BadRequest, ContentType.JSON, "Pathname was not set");
             }
             else
             {
@@ -55,7 +51,7 @@ namespace MonsterTradingCardsGame.Server
             {
                 writer.Write(response.Build());
             }
-            Console.WriteLine($"Thread {Thread.CurrentThread.Name}: Content: {response.Content}");
+            Console.WriteLine($"ResponesRaw: {response.Build()} Content: {response.Content}");
         }
 
         public void CloseRequest()
@@ -65,7 +61,7 @@ namespace MonsterTradingCardsGame.Server
                 if (ClientStream != null)
                 {
                     ClientStream.Close();
-                    ClientStream.Close();
+                    ClientSocket.Close();
                 }
             }
             catch (IOException e)
