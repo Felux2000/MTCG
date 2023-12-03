@@ -101,12 +101,12 @@ namespace MonsterTradingCardsGame.Controller
             {
                 if (firstUser)
                 {
-                    scoreDataJson = $"{scoreDataJson}{user.ShowData()}";
+                    scoreDataJson = $"{scoreDataJson}{user.ShowStats()}";
                     firstUser = false;
                 }
                 else
                 {
-                    scoreDataJson = $"{scoreDataJson}, {user.ShowData()}";
+                    scoreDataJson = $"{scoreDataJson}, {user.ShowStats()}";
                 }
             }
             scoreDataJson = $"{scoreDataJson}]";

@@ -14,7 +14,7 @@ namespace MonsterTradingCardsGame.Services
         public NpgsqlDataSource DbConnection { get; }
         public DatabaseService()
         {
-            DbConnection = NpgsqlDataSource.Create("Host=host.docker.internal;Port=5432;Username=mtcgUser;Password=mtcgPw;Database=mtcgdb");
+            DbConnection = NpgsqlDataSource.Create("Server=localhost;Port=5432;Username=mtcgUser;Password=mtcgPw;Database=mtcgdb");
         }
     }
 }

@@ -19,13 +19,14 @@ namespace MonsterTradingCardsGame.Daos
         public void Create(User user)
         {
 
-            string query = "INSERT INTO \"users\" (username, password, coins, elo, games, bio, image, token) VALUES (@username,@password,@coins,@elo,@games,@bio,@image,@authtoken)";
+            string query = "INSERT INTO \"users\" (username, password, coins, elo, wins, games, bio, image, token) VALUES (@username,@password,@coins,@elo,@wins,@games,@bio,@image,@authtoken)";
             using (var cmd = DbConnection.CreateCommand(query))
             {
                 cmd.Parameters.AddWithValue("username", user.Username);
                 cmd.Parameters.AddWithValue("password", user.Password);
                 cmd.Parameters.AddWithValue("coins", user.Coins);
                 cmd.Parameters.AddWithValue("elo", user.Elo);
+                cmd.Parameters.AddWithValue("wins", user.Wins);
                 cmd.Parameters.AddWithValue("games", user.GamesPlayed);
                 cmd.Parameters.AddWithValue("bio", user.Bio);
                 cmd.Parameters.AddWithValue("image", user.Image);
@@ -38,7 +39,7 @@ namespace MonsterTradingCardsGame.Daos
         public List<User> ReadAll()
         {
             List<User> userList = new List<User>();
-            string query = "SELECT * FROM \"users\";";
+            string query = "SELECT username, coins, elo, wins, games, bio, image, token FROM \"users\";";
             using (var cmd = DbConnection.CreateCommand(query))
             using (var reader = cmd.ExecuteReader())
             {
@@ -46,6 +47,7 @@ namespace MonsterTradingCardsGame.Daos
                 {
                     User tmpUser = new(
                         reader.GetString(0),
+                        reader.GetInt32(1),
                         reader.GetInt32(2),
                         reader.GetInt32(3),
                         reader.GetInt32(4),
@@ -61,7 +63,7 @@ namespace MonsterTradingCardsGame.Daos
 
         public User Read(string username)
         {
-            string query = "SELECT * FROM \"users\" WHERE username = @username;";
+            string query = "SELECT username, coins, elo, wins, games, bio, image, token FROM \"users\" WHERE username = @username;";
             using (var cmd = DbConnection.CreateCommand(query))
             {
                 cmd.Parameters.AddWithValue("username", username);
@@ -71,6 +73,7 @@ namespace MonsterTradingCardsGame.Daos
                     {
                         User tmpUser = new(
                             reader.GetString(0),
+                            reader.GetInt32(1),
                             reader.GetInt32(2),
                             reader.GetInt32(3),
                             reader.GetInt32(4),

@@ -17,10 +17,10 @@ namespace MonsterTradingCardsGame.Server
             );
         private int Port;
         private Game Game;
-        public mtcgServer(Game game, int port)
+        public mtcgServer(Game game)
         {
             Game = game;
-            Port = port;
+            Port = 10001;
         }
 
         public void Start()

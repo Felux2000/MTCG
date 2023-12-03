@@ -48,21 +48,6 @@ namespace MonsterTradingCardsGame
                 }
             }
         }
-        public void UpdateScore() { }
-
-        public User(string Username, string Password, List<Card> Stack, List<Card> Deck, int Coins, int Elo, int Games, int Wins)
-        {
-            this.Username = Username;
-            this.Password = Password;
-            this.Stack = new List<Card>();
-            this.Deck = new List<Card>();
-            this.Stack.AddRange(Stack);
-            this.Deck.AddRange(Deck);
-            this.Coins = Coins;
-            this.Elo = Elo;
-            this.Games = Games;
-            this.Wins = Wins;
-        }
         */
 
         //new user
@@ -72,7 +57,8 @@ namespace MonsterTradingCardsGame
             Password = password;
             Coins = 20;
             Elo = 1000;
-            GamesPlayed = 1000;
+            Wins = 0;
+            GamesPlayed = 0;
             Bio = string.Empty;
             Image = string.Empty;
             AuthToken = string.Empty;
@@ -80,7 +66,7 @@ namespace MonsterTradingCardsGame
             Stack = new List<Card>();
         }
         //existing user
-        public User(string username, int coins, int elo, int gamesPlayed, List<Card> deck, List<Card> stack, string bio, string image, string authToken)
+        public User(string username, int coins, int elo, int wins, int gamesPlayed, List<Card> deck, List<Card> stack, string bio, string image, string authToken)
         {
             Username = username;
             Password = string.Empty;
@@ -95,12 +81,13 @@ namespace MonsterTradingCardsGame
         }
 
 
-        public User(string username, int coins, int elo, int gamesPlayed, string bio, string image, string authToken)
+        public User(string username, int coins, int elo, int wins, int gamesPlayed, string bio, string image, string authToken)
         {
             Username = username;
             Password = string.Empty;
             Coins = coins;
             Elo = elo;
+            Wins = wins;
             GamesPlayed = gamesPlayed;
             Bio = bio;
             Image = image;

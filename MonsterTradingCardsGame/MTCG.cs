@@ -10,12 +10,11 @@ namespace MonsterTradingCardsGame
         static void Main(string[] args)
         {
             Game Game;
-            int Port = 10001;
             mtcgServer Server;
             try
             {
                 Game = new Game(new DatabaseService().DbConnection);
-                Server = new mtcgServer(Game, Port);
+                Server = new mtcgServer(Game);
                 Server.Start();
             }
             catch (SqlException e)
