@@ -5,29 +5,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
-using MonsterTradingCardsGame.Server;
 using System.Text.RegularExpressions;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Npgsql;
 using System.Net;
 using MonsterTradingCardsGame.Controller;
 
-namespace MonsterTradingCardsGame
+namespace MonsterTradingCardsGame.Server
 {
-    internal class Game
+    internal class ResponseHandler
     {
         public NpgsqlDataSource DbConnection { get; set; }
         private UserController UserController;
-        public Game(NpgsqlDataSource dbConnection)
+        public ResponseHandler(NpgsqlDataSource dbConnection)
         {
             DbConnection = dbConnection;
             UserController = new(DbConnection);
         }
 
-        /* public Response HandleRequest(Request request)
+        /* public Response CreateResponse(Request request)
          { return new Response(HttpStatusCode.Accepted, ContentType.JSON, "test"); }
         */
-        public Response HandleRequest(Request request)
+        public Response CreateResponse(Request request)
         {
             switch (request.HttpMethod)
             {

@@ -16,10 +16,10 @@ namespace MonsterTradingCardsGame.Server
             ProtocolType.Tcp
             );
         private int Port;
-        private Game Game;
-        public mtcgServer(Game game)
+        private ResponseHandler ResponsHandler;
+        public mtcgServer(ResponseHandler responseHandler)
         {
-            Game = game;
+            ResponsHandler = responseHandler;
             Port = 10001;
         }
 
@@ -38,8 +38,8 @@ namespace MonsterTradingCardsGame.Server
                 {
                     Console.WriteLine("Waiting for client...");
                     Socket clientSocket = ServerSocket.Accept();
-                    Console.WriteLine("Client connected" + clientSocket.RemoteEndPoint);
-                    Thread clientThread = new(() => ThreadFunc(Game, clientSocket));
+                    Console.WriteLine($"Client connected {clientSocket.RemoteEndPoint}");
+                    Thread clientThread = new(() => ThreadFunc(ResponsHandler, clientSocket));
                     clientThread.Start();
                 }
                 catch (IOException e)
@@ -49,9 +49,9 @@ namespace MonsterTradingCardsGame.Server
             }
         }
 
-        private static void ThreadFunc(Game game, Socket clientSocket)
+        private static void ThreadFunc(ResponseHandler responseHandler, Socket clientSocket)
         {
-            _ = new RequestHandler(game, clientSocket);
+            _ = new RequestHandler(responseHandler, clientSocket);
         }
 
     }

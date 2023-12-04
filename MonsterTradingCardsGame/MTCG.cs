@@ -9,12 +9,12 @@ namespace MonsterTradingCardsGame
     {
         static void Main(string[] args)
         {
-            Game Game;
+            ResponseHandler ResponsHandler;
             mtcgServer Server;
             try
             {
-                Game = new Game(new DatabaseService().DbConnection);
-                Server = new mtcgServer(Game);
+                ResponsHandler = new ResponseHandler(new DatabaseService().DbConnection);
+                Server = new mtcgServer(ResponsHandler);
                 Server.Start();
             }
             catch (SqlException e)

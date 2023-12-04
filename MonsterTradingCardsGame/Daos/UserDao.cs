@@ -114,7 +114,6 @@ namespace MonsterTradingCardsGame.Daos
 
         public bool CheckAuthToken(string authToken)
         {
-            int count = 0;
             string query = "SELECT * FROM \"users\" WHERE token = @authtoken;";
             using (var cmd = DbConnection.CreateCommand(query))
             {

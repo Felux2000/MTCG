@@ -1,11 +1,10 @@
-﻿using MonsterTradingCardsGame;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MonsterTradingCardsGame
+namespace MonsterTradingCardsGame.Cards
 {
     public enum DamageType
     {
@@ -128,7 +127,7 @@ namespace MonsterTradingCardsGame
 
         public string ShowCard()
         {
-            return ($"{{ \"ID\": \"{CardID}\", \"Name\": \"{Name}\", \"Damage\": \"{Damage}\" }}");
+            return $"{{ \"ID\": \"{CardID}\", \"Name\": \"{Name}\", \"Damage\": \"{Damage}\" }}";
         }
     }
 }

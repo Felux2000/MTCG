@@ -11,13 +11,13 @@ namespace MonsterTradingCardsGame.Server
 {
     internal class RequestHandler
     {
-        public Game Game { get; set; }
+        public ResponseHandler ResponseHandler { get; set; }
         public Socket ClientSocket { get; set; }
         public Stream? ClientStream { get; set; }
 
-        public RequestHandler(Game game, Socket clientSocket)
+        public RequestHandler(ResponseHandler responseHandler, Socket clientSocket)
         {
-            Game = game;
+            ResponseHandler = responseHandler;
             ClientSocket = clientSocket;
             Run();
         }
@@ -45,7 +45,7 @@ namespace MonsterTradingCardsGame.Server
             }
             else
             {
-                response = Game.HandleRequest(request);
+                response = ResponseHandler.CreateResponse(request);
             }
             using (StreamWriter writer = new(ClientStream))
             {
