@@ -10,11 +10,7 @@ namespace MonsterTradingCardsGame.Server
 {
     internal class mtcgServer
     {
-        private Socket ServerSocket = new Socket(
-            AddressFamily.InterNetwork,
-            SocketType.Stream,
-            ProtocolType.Tcp
-            );
+        private Socket ServerSocket;
         private int Port;
         private ResponseHandler ResponsHandler;
         public mtcgServer(ResponseHandler responseHandler)
@@ -25,6 +21,11 @@ namespace MonsterTradingCardsGame.Server
 
         public void Start()
         {
+            ServerSocket = new Socket(
+            AddressFamily.InterNetwork,
+            SocketType.Stream,
+            ProtocolType.Tcp
+            );
             ServerSocket.Bind(new IPEndPoint(IPAddress.Loopback, Port));
             ServerSocket.Listen(5);
             Run();

@@ -51,7 +51,7 @@ namespace MonsterTradingCardsGame.Server
                 string? line;
                 using (StreamReader reader = new(inputStream, leaveOpen: true))
                 {
-                    if ((line = reader.ReadLine()) != null)
+                    if ((line = reader.ReadLine()) != string.Empty)
                     {
                         string[] splitLine = line.Split(' ');
                         HasParams = splitLine[1].Contains('?');
