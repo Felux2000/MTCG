@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MonsterTradingCardsGame.Models;
 using Npgsql;
 
 namespace MonsterTradingCardsGame.Daos
@@ -18,7 +19,6 @@ namespace MonsterTradingCardsGame.Daos
 
         public void Create(User user)
         {
-
             string query = "INSERT INTO \"users\" (username, password, coins, elo, wins, games, bio, image, token) VALUES (@username,@password,@coins,@elo,@wins,@games,@bio,@image,@authtoken)";
             using (var cmd = DbConnection.CreateCommand(query))
             {
@@ -33,7 +33,6 @@ namespace MonsterTradingCardsGame.Daos
                 cmd.Parameters.AddWithValue("authtoken", user.AuthToken);
                 cmd.ExecuteNonQuery();
             }
-
         }
 
         public List<User> ReadAll()

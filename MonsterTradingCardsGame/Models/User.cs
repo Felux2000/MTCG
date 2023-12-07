@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MonsterTradingCardsGame.Cards;
 
-namespace MonsterTradingCardsGame
+namespace MonsterTradingCardsGame.Models
 {
     internal class User
     {
@@ -97,15 +97,15 @@ namespace MonsterTradingCardsGame
 
         public string ShowData()
         {
-            return ($"{{ \"Username\": \"{Username}\", \"Bio\": \"{Bio}\", \"Image\": \"{Image}\" }}");
+            return $"{{ \"Username\": \"{Username}\", \"Bio\": \"{Bio}\", \"Image\": \"{Image}\" }}";
         }
         public string ShowElo()
         {
-            return ($"{{ \"Username\": \"{Username}\", \"Elo\": \"{Elo}\" }}");
+            return $"{{ \"Username\": \"{Username}\", \"Elo\": \"{Elo}\" }}";
         }
         public string ShowStats()
         {
-            return ($"{{ \"Name\": \"{Username}\", \"Elo\": \"{Elo}\", \"Wins\": \"{Wins}\", \"Losses\": \"{GamesPlayed - Wins}\"}}");
+            return $"{{ \"Name\": \"{Username}\", \"Elo\": \"{Elo}\", \"Wins\": \"{Wins}\", \"Losses\": \"{GamesPlayed - Wins}\"}}";
         }
 
     }
