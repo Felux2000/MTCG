@@ -23,8 +23,8 @@ namespace MonsterTradingCardsGame.Cards
         public double Damage { get; }
         public DamageType Element { get; }
         public CardType Type { get; }
-        public bool InStore { get; set; }
         public bool InDeck { get; set; }
+        public bool InStore { get; set; }
         public int Index { get; }
 
         public (double final, double raw) CalcDmg(Card EnemyCard)
@@ -114,7 +114,7 @@ namespace MonsterTradingCardsGame.Cards
             }
             return (Damage, Damage);
         }
-        public Card(string cardID, string username, string name, double damage, DamageType element, CardType type, bool inStore, bool inDeck, int index)
+        public Card(string cardID, string username, string name, double damage, DamageType element, CardType type, bool inDeck, bool inStore, int index)
         {
             CardID = cardID;
             Username = username;
@@ -127,19 +127,26 @@ namespace MonsterTradingCardsGame.Cards
             Index = index;
         }
 
-        public Card(string cardID, string username, bool inStore, bool inDeck, int index)
+        public Card(string cardID, string username, bool inDeck, bool inStore, int index)
         {
             Name = string.Empty;
             CardID = cardID;
             Username = username;
-            InStore = InStore;
             InDeck = inDeck;
+            InStore = inStore;
             Index = index;
         }
 
-        public string ShowCard()
+        public string ShowCard(bool plain = false)
         {
-            return $"{{ \"ID\": \"{CardID}\", \"Name\": \"{Name}\", \"Damage\": \"{Damage}\" }}";
+            if (plain)
+            {
+                return $"Id: {CardID}, Name: {Name}, Damage: {Damage}";
+            }
+            else
+            {
+                return $"{{ \"Id\": \"{CardID}\", \"Name\": \"{Name}\", \"Damage\": \"{Damage}\" }}";
+            }
         }
     }
 }

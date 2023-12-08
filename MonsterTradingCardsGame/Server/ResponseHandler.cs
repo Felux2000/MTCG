@@ -17,15 +17,14 @@ namespace MonsterTradingCardsGame.Server
     {
         public NpgsqlDataSource DbConnection { get; set; }
         private UserController UserController;
+        private CardController CardController;
         public ResponseHandler(NpgsqlDataSource dbConnection)
         {
             DbConnection = dbConnection;
             UserController = new(DbConnection);
+            CardController = new(DbConnection);
         }
 
-        /* public Response CreateResponse(Request request)
-         { return new Response(HttpStatusCode.Accepted, ContentType.JSON, "test"); }
-        */
         public Response CreateResponse(Request request)
         {
             switch (request.HttpMethod)
@@ -34,14 +33,14 @@ namespace MonsterTradingCardsGame.Server
                     {
                         if (request.AuthToken == null)
                         {
-                            return new Response(HttpStatusCode.Unauthorized, ContentType.TEXT, "Access token is missing or invalid");
+                            return new Response(HttpStatusCode.Unauthorized, ContentType.TEXT, $"null error: Access token is missing or invalid \n");
                         }
                         string[] splitPath = request.Path.Split('/');
 
                         switch (request.Path)
                         {
-                            //      case "/cards": return;//CardController needed
-                            //      case "/decks": return;//CardController needed
+                            case "/cards": return CardController.GetUserCards(GetUsernameFromToken(request.AuthToken));
+                            case "/deck": return CardController.GetUserDeck(GetUsernameFromToken(request.AuthToken), request.Params.Contains("format=plain"));
                             case "/stats":
                                 return UserController.GetStats(request.AuthToken);
                             case "/scoreboard":
@@ -54,7 +53,7 @@ namespace MonsterTradingCardsGame.Server
                             {
                                 return UserController.GetUserByName(GetUsernameFromPath(splitPath), request.AuthToken);
                             }
-                            return new Response(HttpStatusCode.Unauthorized, ContentType.TEXT, "Access token is missing or invalid");
+                            return new Response(HttpStatusCode.Unauthorized, ContentType.TEXT, $"null error: Access token is missing or invalid \n");
                         }
                         break;
                     }
@@ -62,14 +61,19 @@ namespace MonsterTradingCardsGame.Server
                     {
                         switch (request.Path)
                         {
-                            /*  case "/packages":
-                                  if (CompareAuthTokenToUser(request.AuthToken, GetUsernameFromPath(splitPath)))
-                                  {
-                                      return;//CardController needed
-                                  }
-                                  return new Response(HttpStatusCode.Forbidden, "{ \"error\": \"Incorrect Token\", \"data\": null }");
-                            */
-                            //    case "/transaction/packages":return;//CardController needed
+                            case "/packages":
+                                if (CompareAuthTokenToUser(request.AuthToken, "admin"))
+                                {
+                                    return CardController.CreatePackage(request.Body);
+                                }
+                                return new Response(HttpStatusCode.Forbidden, ContentType.TEXT, $"null error: Provided user is not \"admin\" \n");
+
+                            case "/transactions/packages":
+                                if (request.AuthToken == null)
+                                {
+                                    return new Response(HttpStatusCode.Unauthorized, ContentType.TEXT, $"null error: Access token is missing or invalid \n");
+                                }
+                                return CardController.AcquirePackage(GetUsernameFromToken(request.AuthToken));
                             case "/users":
                                 return UserController.CreateUser(request.Body);
                             case "/sessions":
@@ -92,22 +96,21 @@ namespace MonsterTradingCardsGame.Server
                 case Method.PUT:
                     {
                         string[] splitPath = request.Path.Split('/');
-                        /*  if (request.Path == "/decks")
-                          {
-                              if (request.AuthToken == null)
-                              {
-                                  return new Response(HttpStatusCode.Unauthorized, "{ \"error\": \"No Token set\", \"data\": null }");
-                              }
-                              return; //CardController needed
-                          }
-                          else*/
-                        if (Regex.IsMatch(request.Path, "/users/[a-zA-Z]+"))
+                        if (request.Path == "/deck")
+                        {
+                            if (request.AuthToken == null)
+                            {
+                                return new Response(HttpStatusCode.Unauthorized, ContentType.TEXT, $"null error: Access token is missing or invalid \n");
+                            }
+                            return CardController.AssembleDeck(request.Body, GetUsernameFromToken(request.AuthToken));
+                        }
+                        else if (Regex.IsMatch(request.Path, "/users/[a-zA-Z]+"))
                         {
                             if (CompareAuthTokenToUser(request.AuthToken, GetUsernameFromPath(splitPath)))
                             {
                                 return UserController.UpdateUser(request.AuthToken, GetUsernameFromPath(splitPath), request.Body);
                             }
-                            return new Response(HttpStatusCode.Unauthorized, ContentType.TEXT, "Access token is missing or invalid");
+                            return new Response(HttpStatusCode.Unauthorized, ContentType.TEXT, $"null error: Access token is missing or invalid \n");
                         }
                         break;
                     }/*
@@ -127,7 +130,7 @@ namespace MonsterTradingCardsGame.Server
                     }
                     */
             }
-            return new Response(HttpStatusCode.NotFound, ContentType.TEXT, "Method Not Found");
+            return new Response(HttpStatusCode.NotFound, ContentType.TEXT, $"null error: Method not found \n");
         }
 
         public static string GetUsernameFromPath(string[] split)

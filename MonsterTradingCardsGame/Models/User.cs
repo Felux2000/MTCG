@@ -105,7 +105,7 @@ namespace MonsterTradingCardsGame.Models
         }
         public string ShowStats()
         {
-            return $"{{ \"Name\": \"{Username}\", \"Elo\": \"{Elo}\", \"Wins\": \"{Wins}\", \"Losses\": \"{GamesPlayed - Wins}\"}}";
+            return $"{{ \"Name\": \"{Username}\", \"Elo\": \"{Elo}\", \"Wins\": \"{Wins}\", \"Losses\": \"{GamesPlayed - Wins}\" }}";
         }
 
     }

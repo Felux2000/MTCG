@@ -10,7 +10,6 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace MonsterTradingCardsGame.Controller
@@ -29,7 +28,7 @@ namespace MonsterTradingCardsGame.Controller
             {
                 user = userDao.Read(username);
             }
-            catch (SqlException e)
+            catch (NpgsqlException e)
             {
                 Console.WriteLine(e.StackTrace);
                 return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
@@ -59,7 +58,7 @@ namespace MonsterTradingCardsGame.Controller
                 }
                 user = userDao.Read(authtoken.Split("-")[0]);
             }
-            catch (SqlException e)
+            catch (NpgsqlException e)
             {
                 Console.WriteLine(e.StackTrace);
                 return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
@@ -86,7 +85,7 @@ namespace MonsterTradingCardsGame.Controller
                 }
                 users = userDao.ReadAll();
             }
-            catch (SqlException e)
+            catch (NpgsqlException e)
             {
                 Console.WriteLine(e.StackTrace);
                 return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
@@ -117,36 +116,42 @@ namespace MonsterTradingCardsGame.Controller
         //POST /users
         public Response CreateUser(string body)
         {
-            string username;
-            string password;
-            JObject jsonUser = JsonConvert.DeserializeObject<JObject>(body.ToString());
-            username = (string)jsonUser["Username"];
-            password = (string)jsonUser["Password"];
-
-
-            Console.WriteLine($"{username} {password}");
-            if (username == string.Empty || password == string.Empty)
-            {
-                return SendResponse("null", "Username or password not set", HttpStatusCode.BadRequest, ContentType.TEXT);
-            }
-
-            User user;
             try
             {
-                user = userDao.Read(username);
-                if (user != null)
+                string username;
+                string password;
+                JObject jsonUser = JsonConvert.DeserializeObject<JObject>(body.ToString());
+                username = (string)jsonUser["Username"];
+                password = (string)jsonUser["Password"];
+
+                if (username == string.Empty || password == string.Empty)
                 {
-                    return SendResponse("null", "User with same username already registered", HttpStatusCode.Conflict, ContentType.TEXT);
+                    return SendResponse("null", "Username or password not set", HttpStatusCode.BadRequest, ContentType.TEXT);
                 }
-                user = new(username, password);
-                userDao.Create(user);
+
+                User user;
+                try
+                {
+                    user = userDao.Read(username);
+                    if (user != null)
+                    {
+                        return SendResponse("null", "User with same username already registered", HttpStatusCode.Conflict, ContentType.TEXT);
+                    }
+                    user = new(username, password);
+                    userDao.Create(user);
+                }
+                catch (NpgsqlException e)
+                {
+                    Console.WriteLine(e.StackTrace);
+                    return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                }
+                return SendResponse("User successfully created", "null", HttpStatusCode.Created, ContentType.TEXT);
             }
-            catch (SqlException e)
+            catch (JsonException e)
             {
                 Console.WriteLine(e.StackTrace);
                 return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
             }
-            return SendResponse("User successfully created", "null", HttpStatusCode.Created, ContentType.TEXT);
         }
 
         //POST /sessions
@@ -179,7 +184,7 @@ namespace MonsterTradingCardsGame.Controller
                 userDao.Update(user);
                 return SendResponse(user.AuthToken, "null", HttpStatusCode.OK, ContentType.JSON);
             }
-            catch (SqlException e)
+            catch (NpgsqlException e)
             {
                 Console.WriteLine(e.StackTrace);
                 return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
@@ -230,7 +235,7 @@ namespace MonsterTradingCardsGame.Controller
                 }
                 return SendResponse("User sucessfully updated", "null", HttpStatusCode.OK, ContentType.JSON);
             }
-            catch (SqlException e)
+            catch (NpgsqlException e)
             {
                 Console.WriteLine(e.StackTrace);
                 return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);

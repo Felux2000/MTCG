@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Npgsql;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -47,13 +49,33 @@ namespace MonsterTradingCardsGame.Server
                 {
                     Console.WriteLine(e.StackTrace);
                 }
+
             }
         }
 
         private static void ThreadFunc(ResponseHandler responseHandler, Socket clientSocket)
         {
-            _ = new RequestHandler(responseHandler, clientSocket);
-        }
+            try
+            {
+                _ = new RequestHandler(responseHandler, clientSocket);
 
+            }
+            /* catch (NpgsqlException e)
+             {
+                 Console.WriteLine(e.StackTrace);
+             }*/
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.StackTrace);
+            }
+            catch (NullReferenceException e)
+            {
+                Console.WriteLine(e.StackTrace);
+            }
+            catch (JsonException e)
+            {
+                Console.WriteLine(e.StackTrace);
+            }
+        }
     }
 }

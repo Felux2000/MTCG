@@ -24,7 +24,7 @@ namespace MonsterTradingCardsGame.Daos
             string query = "INSERT INTO \"cards\" (cardid, username, cardindex, indeck, instore) VALUES (@cardid, @username, @cardindex, @indeck, @instore)";
             using (var cmd = DbConnection.CreateCommand(query))
             {
-                cmd.Parameters.AddWithValue("cardid", card.CardID);
+                cmd.Parameters.AddWithValue("cardid", Guid.Parse(card.CardID));
                 cmd.Parameters.AddWithValue("username", card.Username);
                 cmd.Parameters.AddWithValue("cardindex", card.Index);
                 cmd.Parameters.AddWithValue("indeck", card.InDeck);
@@ -35,17 +35,18 @@ namespace MonsterTradingCardsGame.Daos
 
         public Card Read(string cardid)
         {
+            Console.WriteLine($" card id {cardid}\n");
             string query = "SELECT cardid, username, cardindex, indeck, instore FROM \"cards\" WHERE cardid = @cardid;";
             using (var cmd = DbConnection.CreateCommand(query))
             {
-                cmd.Parameters.AddWithValue("cardid", cardid);
+                cmd.Parameters.AddWithValue("cardid", Guid.Parse(cardid));
                 using (var reader = cmd.ExecuteReader())
                 {
                     if (reader.Read())
                     {
                         int cardindex = reader.GetInt32(2);
                         Card tmpCard = new(
-                            reader.GetString(0),
+                            reader.GetGuid(0).ToString(),
                             reader.GetString(1),
                             CardAssembler.GetCardName(cardindex),
                             CardAssembler.GetCardDamage(cardindex),
@@ -78,7 +79,7 @@ namespace MonsterTradingCardsGame.Daos
                     {
                         int cardindex = reader.GetInt32(2);
                         Card tmpCard = new(
-                            reader.GetString(0),
+                            reader.GetGuid(0).ToString(),
                             reader.GetString(1),
                             CardAssembler.GetCardName(cardindex),
                             CardAssembler.GetCardDamage(cardindex),
@@ -96,19 +97,19 @@ namespace MonsterTradingCardsGame.Daos
         }
 
 
-        /*   public void Update(Card card)
-           {
-               string query = "UPDATE \"cards\" SET username = @username, indeck = @indeck, instore = @instore WHERE cardid = @cardid;";
-               using (var cmd = DbConnection.CreateCommand(query))
-               {
-                   cmd.Parameters.AddWithValue("username", card.Username);
-                   cmd.Parameters.AddWithValue("indeck", card.InDeck);
-                   cmd.Parameters.AddWithValue("instore", card.InStore);
-                   cmd.Parameters.AddWithValue("cardid", card.CardID);
-                   cmd.ExecuteNonQuery();
-               }
-           }
-        */
+        public void Update(Card card)
+        {
+            string query = "UPDATE \"cards\" SET username = @username, indeck = @indeck, instore = @instore WHERE cardid = @cardid;";
+            using (var cmd = DbConnection.CreateCommand(query))
+            {
+                cmd.Parameters.AddWithValue("username", card.Username);
+                cmd.Parameters.AddWithValue("indeck", card.InDeck);
+                cmd.Parameters.AddWithValue("instore", card.InStore);
+                cmd.Parameters.AddWithValue("cardid", Guid.Parse(card.CardID));
+                cmd.ExecuteNonQuery();
+            }
+        }
+
 
         public void UpdateDeck(List<Card> cards, string username)
         {
@@ -116,11 +117,11 @@ namespace MonsterTradingCardsGame.Daos
             {
                 var batchcommand1 = new NpgsqlBatchCommand("UPDATE \"cards\" SET indeck = false WHERE username = @username;");
                 batchcommand1.Parameters.AddWithValue("username", username);
-                var batchcommand2 = new NpgsqlBatchCommand("UPDATE \"cards\" SET indeck = true WHERE username = @username and (cardid = @cardid1 OR cardid = @cardidi2 OR cardid = @cardid3 OR cardid = @cardid4);");
+                var batchcommand2 = new NpgsqlBatchCommand("UPDATE \"cards\" SET indeck = true WHERE username = @username and (cardid = @cardid1 OR cardid = @cardid2 OR cardid = @cardid3 OR cardid = @cardid4);");
                 batchcommand2.Parameters.AddWithValue("username", username);
                 for (int i = 0; i < 4; i++)
                 {
-                    batchcommand2.Parameters.AddWithValue($"cardid{i}", cards[i].CardID);
+                    batchcommand2.Parameters.AddWithValue($"cardid{i + 1}", Guid.Parse(cards[i].CardID));
                 }
                 batch.BatchCommands.Add(batchcommand1);
                 batch.BatchCommands.Add(batchcommand2);
@@ -141,7 +142,7 @@ namespace MonsterTradingCardsGame.Daos
                     {
                         int cardindex = reader.GetInt32(2);
                         Card tmpCard = new(
-                            reader.GetString(0),
+                            reader.GetGuid(0).ToString(),
                             reader.GetString(1),
                             CardAssembler.GetCardName(cardindex),
                             CardAssembler.GetCardDamage(cardindex),
