@@ -4,29 +4,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
+using System.Xml.Linq;
 
 namespace MonsterTradingCardsGame.Models
 {
     internal class TradingDeal
     {
-        public string TradeID { get; set; }
+        public string Id { get; set; }
+        public string CardToTrade { get; set; }
+        public string Type { get; set; }
+        public double MinimumDamage { get; set; }
         public string Username { get; set; }
-        public string OfferedCardID { get; set; }
-        public double MinimumDmg { get; set; }
-        public CardType CardType { get; set; }
 
-        public TradingDeal(string tradeID, string username, string offeredCardID, double minimumDmg, int cardType)
+        public TradingDeal(string tradeID, string offeredCardID, double minimumDmg, string cardType, string username = "")
         {
-            TradeID = tradeID;
+            Id = tradeID;
+            CardToTrade = offeredCardID;
+            Type = cardType;
+            MinimumDamage = minimumDmg;
             Username = username;
-            OfferedCardID = offeredCardID;
-            MinimumDmg = minimumDmg;
-            switch (cardType)
-            {
-                case 0: CardType = CardType.monster; break;
-                case 1: CardType = CardType.spell; break;
-                case 2: CardType = CardType.effect; break;
-            }
+        }
+
+        public string ShowDeal()
+        {
+            return $"{{ \"Id\": \"{Id}\", \"CardToTrade\": \"{CardToTrade}\", \"Type\": \"{Type}\", \"MinimumDamage\": \"{MinimumDamage}\" }}";
         }
     }
 }

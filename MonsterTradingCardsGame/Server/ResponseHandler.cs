@@ -18,11 +18,13 @@ namespace MonsterTradingCardsGame.Server
         public NpgsqlDataSource DbConnection { get; set; }
         private UserController UserController;
         private CardController CardController;
+        private TradingController TradingController;
         public ResponseHandler(NpgsqlDataSource dbConnection)
         {
             DbConnection = dbConnection;
             UserController = new(DbConnection);
             CardController = new(DbConnection);
+            TradingController = new(DbConnection);
         }
 
         public Response CreateResponse(Request request)
@@ -45,7 +47,7 @@ namespace MonsterTradingCardsGame.Server
                                 return UserController.GetStats(request.AuthToken);
                             case "/scoreboard":
                                 return UserController.GetScoreBoard(request.AuthToken);
-                                //        case "/tradings":return;//TradinController needed
+                            case "/tradings": return TradingController.GetTradingDeals(request.AuthToken);
                         }
                         if (Regex.IsMatch(request.Path, "/users/[a-zA-Z]+"))
                         {
@@ -66,7 +68,7 @@ namespace MonsterTradingCardsGame.Server
                                 {
                                     return CardController.CreatePackage(request.Body);
                                 }
-                                return new Response(HttpStatusCode.Forbidden, ContentType.TEXT, $"null error: Provided user is not \"admin\" \n");
+                                return new Response(HttpStatusCode.Forbidden, ContentType.TEXT, $"null error: User is prohibited from action \n");
 
                             case "/transactions/packages":
                                 if (request.AuthToken == null)
@@ -78,7 +80,12 @@ namespace MonsterTradingCardsGame.Server
                                 return UserController.CreateUser(request.Body);
                             case "/sessions":
                                 return UserController.LoginUser(request.Body);
-                                //  case "/tradings": return;//TradinController needed
+                            case "/tradings":
+                                if (request.AuthToken == null)
+                                {
+                                    return new Response(HttpStatusCode.Unauthorized, ContentType.TEXT, $"null error: Access token is missing or invalid \n");
+                                }
+                                return TradingController.CreateTradingDeal(request.Body, GetUsernameFromToken(request.AuthToken));
                                 //    case "/battles":return;//BattleController needed
                         }
                         /*    if (Regex.IsMatch(request.Path, "/tradings/([A-Za-z0-9]+(-[A-Za-z0-9]+)+)"))
