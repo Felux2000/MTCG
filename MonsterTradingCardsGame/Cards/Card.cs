@@ -27,7 +27,7 @@ namespace MonsterTradingCardsGame.Cards
         public bool InStore { get; set; }
         public int Index { get; }
 
-        public (double final, double raw) CalcDmg(Card EnemyCard)
+        public double CalcDmg(Card EnemyCard)
         {
             DamageType EnemyElement = EnemyCard.Element;
             CardType EnemyType = EnemyCard.Type;
@@ -35,20 +35,20 @@ namespace MonsterTradingCardsGame.Cards
 
             if (Type == CardType.effect || EnemyCard.Type == CardType.effect)
             {
-                return (Damage, Damage);
+                return Damage;
             }
 
             if (Type == CardType.spell && EnemyName == "Kraken")
             {
-                return (0, Damage);
+                return 0;
             }
 
             switch (Name)
             {
-                case "Goblin": if (EnemyName == "Dragon") return (0, Damage); ; ; break;
-                case "Knight": if (EnemyType == CardType.spell && EnemyElement == DamageType.water) return (0, Damage); ; ; break;
-                case "Ork": if (EnemyName == "Wizard") return (0, Damage); ; ; break;
-                case "Dragon": if (EnemyName == "FireElf") return (0, Damage); ; ; break;
+                case "Goblin": if (EnemyName == "Dragon") return 0; break;
+                case "Knight": if (EnemyType == CardType.spell && EnemyElement == DamageType.water) return 0; break;
+                case "Ork": if (EnemyName == "Wizard") return 0; break;
+                case "Dragon": if (EnemyName == "FireElf") return 0; break;
                 default:
                     break;
             }
@@ -110,9 +110,9 @@ namespace MonsterTradingCardsGame.Cards
                         break;
                     default: EffectiveDmg = Damage; break;
                 }
-                return (EffectiveDmg, Damage); ;
+                return EffectiveDmg; ;
             }
-            return (Damage, Damage);
+            return Damage;
         }
         public Card(string cardID, string username, string name, double damage, DamageType element, CardType type, bool inDeck, bool inStore, int index)
         {

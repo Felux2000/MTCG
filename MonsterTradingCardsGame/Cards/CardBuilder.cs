@@ -16,7 +16,7 @@ namespace MonsterTradingCardsGame.Cards
         public CardBuilder()
         {
             _cardName = new List<string>() { "Kraken", "Goblin", "Knight", "Wizard", "Dragon", "FireElf", "Ork", "Archer", "Mage", "Farmer", "Wyvern", "Fireball", "WaterGun", "WindCutter", "EarthSpike", "Bless", "Amplify", "Depression", "Diminish" };
-            _cardDamage = new List<double>() { 25, 5, 15, 30, 50, 20, 20, 15, 40, 5, 40, 30, 20, 25, 35, 1.2, 1.35, 1.15, 1.3 };
+            _cardDamage = new List<double>() { 25, 5, 15, 30, 50, 20, 20, 15, 40, 5, 40, 30, 20, 25, 35, 1.2, 1.35, 0.85, 0.75 };
             _cardElement = new List<DamageType>() { DamageType.water, DamageType.normal, DamageType.normal, DamageType.air, DamageType.fire, DamageType.fire, DamageType.earth, DamageType.air, DamageType.fire, DamageType.normal, DamageType.earth, DamageType.fire, DamageType.water, DamageType.air, DamageType.earth, DamageType.normal, DamageType.normal, DamageType.normal, DamageType.normal };
             _cardType = new List<CardType>() { CardType.monster, CardType.monster, CardType.monster, CardType.monster, CardType.monster, CardType.monster, CardType.monster, CardType.monster, CardType.monster, CardType.monster, CardType.monster, CardType.spell, CardType.spell, CardType.spell, CardType.spell, CardType.effect, CardType.effect, CardType.effect, CardType.effect };
         }
