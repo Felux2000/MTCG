@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace MonsterTradingCardsGame.Server
 {
-    internal class mtcgServer
+    internal class MtcgServer
     {
         private Socket ServerSocket;
         private int Port;
         private ResponseHandler ResponsHandler;
-        public mtcgServer(ResponseHandler responseHandler)
+        public MtcgServer(ResponseHandler responseHandler)
         {
             ResponsHandler = responseHandler;
             Port = 10001;
@@ -55,7 +55,7 @@ namespace MonsterTradingCardsGame.Server
 
         private static void ThreadFunc(ResponseHandler responseHandler, Socket clientSocket)
         {
-            try
+            //try
             {
                 _ = new RequestHandler(responseHandler, clientSocket);
 
@@ -63,7 +63,7 @@ namespace MonsterTradingCardsGame.Server
             /* catch (NpgsqlException e)
              {
                  Console.WriteLine(e.StackTrace);
-             }*/
+             }
             catch (ArgumentException e)
             {
                 Console.WriteLine(e.StackTrace);
@@ -75,7 +75,7 @@ namespace MonsterTradingCardsGame.Server
             catch (JsonException e)
             {
                 Console.WriteLine(e.StackTrace);
-            }
+            }*/
         }
     }
 }

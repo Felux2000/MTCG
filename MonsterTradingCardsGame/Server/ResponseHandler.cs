@@ -51,9 +51,9 @@ namespace MonsterTradingCardsGame.Server
                         }
                         if (Regex.IsMatch(request.Path, "/users/[a-zA-Z]+"))
                         {
-                            if (CompareAuthTokenToUser(request.AuthToken, GetUsernameFromPath(splitPath)))
+                            if (CompareAuthTokenToUser(request.AuthToken, GetIDFromPath(splitPath)))
                             {
-                                return UserController.GetUserByName(GetUsernameFromPath(splitPath), request.AuthToken);
+                                return UserController.GetUserByName(GetIDFromPath(splitPath), request.AuthToken);
                             }
                             return new Response(HttpStatusCode.Unauthorized, ContentType.TEXT, $"null error: Access token is missing or invalid \n");
                         }
@@ -88,15 +88,15 @@ namespace MonsterTradingCardsGame.Server
                                 return TradingController.CreateTradingDeal(request.Body, GetUsernameFromToken(request.AuthToken));
                                 //    case "/battles":return;//BattleController needed
                         }
-                        /*    if (Regex.IsMatch(request.Path, "/tradings/([A-Za-z0-9]+(-[A-Za-z0-9]+)+)"))
+                        if (Regex.IsMatch(request.Path, "/tradings/([A-Za-z0-9]+(-[A-Za-z0-9]+)+)"))
+                        {
+                            string[] splitPath = request.Path.Split('/');
+                            if (request.AuthToken == null)
                             {
-                                string[] splitPath = request.Path.Split('/');
-                                if (request.AuthToken == null)
-                                {
-                                    return new Response(HttpStatusCode.Unauthorized, "{ \"error\": \"No Token set\", \"data\": null }");
-                                }
-                                return;//Tradingcontroller needed
-                            }*/
+                                return new Response(HttpStatusCode.Unauthorized, ContentType.TEXT, $"null error: Access token is missing or invalid \n");
+                            }
+                            return TradingController.TakeTradingDeal(GetIDFromPath(splitPath), request.Body, GetUsernameFromToken(request.AuthToken));
+                        }
 
                         break;
                     }
@@ -113,34 +113,34 @@ namespace MonsterTradingCardsGame.Server
                         }
                         else if (Regex.IsMatch(request.Path, "/users/[a-zA-Z]+"))
                         {
-                            if (CompareAuthTokenToUser(request.AuthToken, GetUsernameFromPath(splitPath)))
+                            if (CompareAuthTokenToUser(request.AuthToken, GetIDFromPath(splitPath)))
                             {
-                                return UserController.UpdateUser(request.AuthToken, GetUsernameFromPath(splitPath), request.Body);
+                                return UserController.UpdateUser(request.AuthToken, GetIDFromPath(splitPath), request.Body);
                             }
                             return new Response(HttpStatusCode.Unauthorized, ContentType.TEXT, $"null error: Access token is missing or invalid \n");
                         }
                         break;
-                    }/*
+                    }
                 case Method.DELETE:
                     {
                         string[] splitPath = request.Path.Split('/');
                         if (request.AuthToken == null)
                         {
-                            return new Response(HttpStatusCode.Unauthorized, "{ \"error\": \"No Token set\", \"data\": null }");
+                            return new Response(HttpStatusCode.Unauthorized, ContentType.TEXT, $"null error: Access token is missing or invalid \n");
                         }
                         else if (Regex.IsMatch(request.Path, "/tradings/([A-Za-z0-9]+(-[A-Za-z0-9]+)+)"))
                         {
-                            return; //TradingController needed
+                            return TradingController.DeleteTradingDeal(GetIDFromPath(splitPath), GetUsernameFromToken(request.AuthToken));
                         }
-                    break;
+                        break;
 
                     }
-                    */
+
             }
             return new Response(HttpStatusCode.NotFound, ContentType.TEXT, $"null error: Method not found \n");
         }
 
-        public static string GetUsernameFromPath(string[] split)
+        public static string GetIDFromPath(string[] split)
         {
             //get username if in path
             if (split == null)

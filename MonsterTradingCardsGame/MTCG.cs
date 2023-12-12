@@ -10,11 +10,11 @@ namespace MonsterTradingCardsGame
         static void Main(string[] args)
         {
             ResponseHandler ResponsHandler;
-            mtcgServer Server;
+            MtcgServer Server;
             try
             {
                 ResponsHandler = new ResponseHandler(new DatabaseService().DbConnection);
-                Server = new mtcgServer(ResponsHandler);
+                Server = new(ResponsHandler);
                 Server.Start();
             }
             catch (SqlException e)
