@@ -11,15 +11,15 @@ namespace MonsterTradingCardsGame.Models
     {
         public string Username { get; set; }
         public string Password { get; }
-        public List<Card>? Stack { get; set; }
         public List<Card>? Deck { get; set; }
         public int Coins { get; set; }
         public int Elo { get; set; }
         public int Wins { get; set; }
-        public int GamesPlayed { get; }
+        public int GamesPlayed { get; set; }
         public string Bio { get; set; }
         public string Image { get; set; }
         public string AuthToken { get; set; }
+        public bool HasDeck { get; set; }
 
         /*public void BuyPackage()
         {
@@ -64,25 +64,10 @@ namespace MonsterTradingCardsGame.Models
             Image = string.Empty;
             AuthToken = string.Empty;
             Deck = new List<Card>();
-            Stack = new List<Card>();
+            HasDeck = false;
         }
         //existing user
-        public User(string username, int coins, int elo, int wins, int gamesPlayed, List<Card> deck, List<Card> stack, string bio, string image, string authToken)
-        {
-            Username = username;
-            Password = string.Empty;
-            Coins = coins;
-            Elo = elo;
-            GamesPlayed = gamesPlayed;
-            Deck = deck;
-            Stack = stack;
-            Bio = bio;
-            Image = image;
-            AuthToken = authToken;
-        }
-
-
-        public User(string username, int coins, int elo, int wins, int gamesPlayed, string bio, string image, string authToken)
+        public User(string username, int coins, int elo, int wins, int gamesPlayed, string bio, string image, string authToken, bool hasDeck)
         {
             Username = username;
             Password = string.Empty;
@@ -93,6 +78,7 @@ namespace MonsterTradingCardsGame.Models
             Bio = bio;
             Image = image;
             AuthToken = authToken;
+            HasDeck = hasDeck;
         }
 
         public string ShowData()

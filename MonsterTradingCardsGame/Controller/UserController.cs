@@ -130,7 +130,7 @@ namespace MonsterTradingCardsGame.Controller
                 }
 
                 User user;
-                try
+                //try
                 {
                     user = userDao.Read(username);
                     if (user != null)
@@ -140,11 +140,11 @@ namespace MonsterTradingCardsGame.Controller
                     user = new(username, password);
                     userDao.Create(user);
                 }
-                catch (NpgsqlException e)
-                {
-                    Console.WriteLine(e.StackTrace);
-                    return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
-                }
+                /*  catch (NpgsqlException e)
+                  {
+                      Console.WriteLine(e.StackTrace);
+                      return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                  }*/
                 return SendResponse("User successfully created", "null", HttpStatusCode.Created, ContentType.TEXT);
             }
             catch (JsonException e)

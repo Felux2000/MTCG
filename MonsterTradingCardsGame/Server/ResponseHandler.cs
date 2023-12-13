@@ -19,12 +19,14 @@ namespace MonsterTradingCardsGame.Server
         private UserController UserController;
         private CardController CardController;
         private TradingController TradingController;
+        private BattleController BattleController;
         public ResponseHandler(NpgsqlDataSource dbConnection)
         {
             DbConnection = dbConnection;
             UserController = new(DbConnection);
             CardController = new(DbConnection);
             TradingController = new(DbConnection);
+            BattleController = new(DbConnection);
         }
 
         public Response CreateResponse(Request request)
@@ -86,7 +88,7 @@ namespace MonsterTradingCardsGame.Server
                                     return new Response(HttpStatusCode.Unauthorized, ContentType.TEXT, $"null error: Access token is missing or invalid \n");
                                 }
                                 return TradingController.CreateTradingDeal(request.Body, GetUsernameFromToken(request.AuthToken));
-                                //    case "/battles":return;//BattleController needed
+                            case "/battles": return BattleController.HaveBattle(GetUsernameFromToken(request.AuthToken));
                         }
                         if (Regex.IsMatch(request.Path, "/tradings/([A-Za-z0-9]+(-[A-Za-z0-9]+)+)"))
                         {

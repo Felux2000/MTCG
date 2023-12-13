@@ -19,7 +19,7 @@ namespace MonsterTradingCardsGame.Daos
 
         public void Create(User user)
         {
-            string query = "INSERT INTO \"users\" (username, password, coins, elo, wins, games, bio, image, token) VALUES (@username,@password,@coins,@elo,@wins,@games,@bio,@image,@authtoken)";
+            string query = "INSERT INTO \"users\" (username, password, coins, elo, wins, games, bio, image, deck, token) VALUES (@username,@password,@coins,@elo,@wins,@games,@bio,@image,@deck,@authtoken)";
             using (var cmd = DbConnection.CreateCommand(query))
             {
                 cmd.Parameters.AddWithValue("username", user.Username);
@@ -30,6 +30,7 @@ namespace MonsterTradingCardsGame.Daos
                 cmd.Parameters.AddWithValue("games", user.GamesPlayed);
                 cmd.Parameters.AddWithValue("bio", user.Bio);
                 cmd.Parameters.AddWithValue("image", user.Image);
+                cmd.Parameters.AddWithValue("deck", user.HasDeck);
                 cmd.Parameters.AddWithValue("authtoken", user.AuthToken);
                 cmd.ExecuteNonQuery();
             }
@@ -38,7 +39,7 @@ namespace MonsterTradingCardsGame.Daos
         public List<User> ReadAll()
         {
             List<User> userList = new List<User>();
-            string query = "SELECT username, coins, elo, wins, games, bio, image, token FROM \"users\";";
+            string query = "SELECT username, coins, elo, wins, games, bio, image, token, deck FROM \"users\";";
             using (var cmd = DbConnection.CreateCommand(query))
             using (var reader = cmd.ExecuteReader())
             {
@@ -52,7 +53,8 @@ namespace MonsterTradingCardsGame.Daos
                         reader.GetInt32(4),
                         reader.GetString(5),
                         reader.GetString(6),
-                        reader.GetString(7)
+                        reader.GetString(7),
+                        reader.GetBoolean(8)
                         );
                     userList.Add(tmpUser);
                 }
@@ -62,7 +64,7 @@ namespace MonsterTradingCardsGame.Daos
 
         public User Read(string username)
         {
-            string query = "SELECT username, coins, elo, wins, games, bio, image, token FROM \"users\" WHERE username = @username;";
+            string query = "SELECT username, coins, elo, wins, games, bio, image, token, deck FROM \"users\" WHERE username = @username;";
             using (var cmd = DbConnection.CreateCommand(query))
             {
                 cmd.Parameters.AddWithValue("username", username);
@@ -78,7 +80,8 @@ namespace MonsterTradingCardsGame.Daos
                             reader.GetInt32(4),
                             reader.GetString(5),
                             reader.GetString(6),
-                            reader.GetString(7)
+                            reader.GetString(7),
+                            reader.GetBoolean(8)
                             );
                         return tmpUser;
                     }
@@ -133,7 +136,7 @@ namespace MonsterTradingCardsGame.Daos
 
         public void Update(User user, string newname = null)
         {
-            string query = "UPDATE \"users\" SET username = @newname, coins = @coins, elo = @elo, games = @games, bio = @bio, image = @image, token = @authtoken WHERE username = @username;";
+            string query = "UPDATE \"users\" SET username = @newname, coins = @coins, elo = @elo, games = @games, bio = @bio, image = @image, deck=@deck, wins=@wins, token = @authtoken WHERE username = @username;";
             using (var cmd = DbConnection.CreateCommand(query))
             {
                 if (newname == null)
@@ -150,8 +153,66 @@ namespace MonsterTradingCardsGame.Daos
                 cmd.Parameters.AddWithValue("games", user.GamesPlayed);
                 cmd.Parameters.AddWithValue("bio", user.Bio);
                 cmd.Parameters.AddWithValue("image", user.Image);
+                cmd.Parameters.AddWithValue("deck", user.HasDeck);
+                cmd.Parameters.AddWithValue("wins", user.Wins);
                 cmd.Parameters.AddWithValue("authtoken", user.AuthToken);
                 cmd.ExecuteNonQuery();
+            }
+        }
+        public User GetOpponent(int elo, string username)
+        {
+            User opponent = null;
+            string query = "SELECT username, coins, elo, wins, games, bio, image, token, deck FROM \"users\" WHERE elo > @elo AND username != @username AND deck = true ORDER BY elo ASC;";
+            using (var cmd = DbConnection.CreateCommand(query))
+            {
+                cmd.Parameters.AddWithValue("elo", elo);
+                cmd.Parameters.AddWithValue("username", username);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        opponent = new(
+                            reader.GetString(0),
+                            reader.GetInt32(1),
+                            reader.GetInt32(2),
+                            reader.GetInt32(3),
+                            reader.GetInt32(4),
+                            reader.GetString(5),
+                            reader.GetString(6),
+                            reader.GetString(7),
+                            reader.GetBoolean(8)
+                            );
+                        return opponent;
+                    }
+                }
+            }
+            query = "SELECT username, coins, elo, wins, games, bio, image, token, deck FROM \"users\" WHERE elo <= @elo AND username != @username AND deck = true ORDER BY elo DESC;";
+            using (var cmd = DbConnection.CreateCommand(query))
+            {
+                cmd.Parameters.AddWithValue("elo", elo);
+                cmd.Parameters.AddWithValue("username", username);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        opponent = new(
+                            reader.GetString(0),
+                            reader.GetInt32(1),
+                            reader.GetInt32(2),
+                            reader.GetInt32(3),
+                            reader.GetInt32(4),
+                            reader.GetString(5),
+                            reader.GetString(6),
+                            reader.GetString(7),
+                            reader.GetBoolean(8)
+                            );
+                        return opponent;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
             }
         }
     }

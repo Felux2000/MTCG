@@ -245,8 +245,10 @@ namespace MonsterTradingCardsGame.Controller
                     chosenCards.Add(tmpCard);
                 }
 
+                user.HasDeck = true;
                 //create new deck
                 cardDao.UpdateDeck(chosenCards, user.Username);
+                userDao.Update(user);
                 return SendResponse("The deck has been successfully configured", "null", HttpStatusCode.OK, ContentType.TEXT);
 
             }
