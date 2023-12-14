@@ -105,7 +105,7 @@ namespace MonsterTradingCardsGame.Controller
             {
                 List<Card> cards = new();
                 string[] cardId = new string[5];
-                int[] cardIndex = new int[5];
+                int cardIndex;
                 JObject[] jsonCard = JsonConvert.DeserializeObject<JObject[]>(body.ToString());
                 int cardCount = jsonCard.Length;
                 if (cardCount != 5)
@@ -115,12 +115,12 @@ namespace MonsterTradingCardsGame.Controller
                 for (int i = 0; i < cardCount; i++)
                 {
                     cardId[i] = (string)jsonCard[i]["Id"];
-                    cardIndex[i] = (int)jsonCard[i]["Index"];
-                    if (cardId[i] == string.Empty || cardIndex[i] == null)
+                    cardIndex = (int)jsonCard[i]["Index"];
+                    if (cardId[i] == string.Empty || cardIndex == null)
                     {
                         return SendResponse("null", "Invalid Information for card declaration", HttpStatusCode.BadRequest, ContentType.TEXT);
                     }
-                    Card tmpCard = new(cardId[i], "admin", false, false, cardIndex[i]);
+                    Card tmpCard = new(cardId[i], "admin", false, false, cardIndex);
                     cards.Add(tmpCard);
                 }
                 foreach (string id in cardId)
@@ -134,7 +134,7 @@ namespace MonsterTradingCardsGame.Controller
                 {
                     cardDao.Create(card);
                 }
-                Package newPackage = new(cardId, cardIndex);
+                Package newPackage = new(cardId);
                 packageDao.Create(newPackage);
                 return SendResponse("Package and cards successfully created", "null", HttpStatusCode.Created, ContentType.TEXT);
 

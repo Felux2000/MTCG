@@ -9,12 +9,10 @@ namespace MonsterTradingCardsGame.Models
     internal class Package
     {
         public string[] CardID { get; set; }
-        public int[] CardIndex { get; set; }
 
-        public Package(string[] cardID, int[] cardIndex)
+        public Package(string[] cardID)
         {
             CardID = cardID;
-            CardIndex = cardIndex;
         }
     }
 }

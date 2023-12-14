@@ -134,8 +134,8 @@ namespace MonsterTradingCardsGame.Models
 
         private static int CalculateElo(int eloCalc, int eloRef, bool winner)
         {
-            int eloIncrease = 10;
-            int eloDecrease = 8;
+            int eloIncrease = 5;
+            int eloDecrease = 3;
             if (winner)
             {
                 if (eloCalc < eloRef)

@@ -22,19 +22,14 @@ namespace MonsterTradingCardsGame.Daos
 
         public void Create(Package package)
         {
-            string query = "INSERT INTO \"packages\" (idone, indexone, idtwo, indextwo, idthree, indexthree, idfour, indexfour, idfive, indexfive) VALUES (@idone, @indexone, @idtwo, @indextwo, @idthree, @indexthree, @idfour, @indexfour, @idfive, @indexfive)";
+            string query = "INSERT INTO \"packages\" (idone, idtwo, idthree, idfour, idfive) VALUES (@idone, @idtwo, @idthree, @idfour, @idfive)";
             using (var cmd = DbConnection.CreateCommand(query))
             {
                 cmd.Parameters.AddWithValue("idone", Guid.Parse(package.CardID[0]));
-                cmd.Parameters.AddWithValue("indexone", package.CardIndex[0]);
                 cmd.Parameters.AddWithValue("idtwo", Guid.Parse(package.CardID[1]));
-                cmd.Parameters.AddWithValue("indextwo", package.CardIndex[1]);
                 cmd.Parameters.AddWithValue("idthree", Guid.Parse(package.CardID[2]));
-                cmd.Parameters.AddWithValue("indexthree", package.CardIndex[2]);
                 cmd.Parameters.AddWithValue("idfour", Guid.Parse(package.CardID[3]));
-                cmd.Parameters.AddWithValue("indexfour", package.CardIndex[3]);
                 cmd.Parameters.AddWithValue("idfive", Guid.Parse(package.CardID[4]));
-                cmd.Parameters.AddWithValue("indexfive", package.CardIndex[4]);
                 cmd.ExecuteNonQuery();
             }
         }
@@ -44,39 +39,39 @@ namespace MonsterTradingCardsGame.Daos
             List<Card> cards = new();
 
             Monitor.Enter(this);
-            string query = "SELECT packageid, idone, indexone, idtwo, indextwo, idthree, indexthree, idfour, indexfour, idfive, indexfive FROM packages LIMIT 1;";
+            string query = "SELECT packageid, cardid, username, cardindex FROM cards JOIN packages ON cardid = idone OR cardid = idtwo OR cardid = idthree OR cardid = idfour OR cardid = idfive ORDER BY packageid LIMIT 5;";
             using (var cmd = DbConnection.CreateCommand(query))
             {
                 using (var reader = cmd.ExecuteReader())
                 {
-                    if (reader.Read())
+                    int packageID = -1;
+                    while (reader.Read())
                     {
-                        for (int i = 0; i < 10; i += 2)
-                        {
-                            int cardindex = reader.GetInt32(i + 2);
-                            Card tmpCard = new(
-                                reader.GetGuid(i + 1).ToString(),
-                                string.Empty,
-                                CardAssembler.GetCardName(cardindex),
-                                CardAssembler.GetCardDamage(cardindex),
-                                CardAssembler.GetCardElement(cardindex),
-                                CardAssembler.GetCardType(cardindex),
-                                false,
-                                false,
-                                cardindex
-                                );
-                            cards.Add(tmpCard);
+                        packageID = reader.GetInt32(0);
+                        int cardIndex = reader.GetInt32(3);
+                        Card tmpCard = new(
+                            reader.GetGuid(1).ToString(),
+                            reader.GetString(2),
+                            CardAssembler.GetCardName(cardIndex),
+                            CardAssembler.GetCardDamage(cardIndex),
+                            CardAssembler.GetCardElement(cardIndex),
+                            CardAssembler.GetCardType(cardIndex),
+                            false,
+                            false,
+                            cardIndex,
+                            CardAssembler.GetCardDescription(cardIndex)
+                            );
+                        cards.Add(tmpCard);
 
-                        }
-                        Delete(reader.GetInt32(0));
-                        Monitor.Exit(this);
-                        return cards;
                     }
-                    else
+                    if (cards.Count != 5)
                     {
                         Monitor.Exit(this);
                         return null;
                     }
+                    Delete(packageID);
+                    Monitor.Exit(this);
+                    return cards;
                 }
             }
         }

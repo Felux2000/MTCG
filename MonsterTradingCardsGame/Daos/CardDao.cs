@@ -44,17 +44,17 @@ namespace MonsterTradingCardsGame.Daos
                 {
                     if (reader.Read())
                     {
-                        int cardindex = reader.GetInt32(2);
+                        int cardIndex = reader.GetInt32(2);
                         Card tmpCard = new(
                             reader.GetGuid(0).ToString(),
                             reader.GetString(1),
-                            CardAssembler.GetCardName(cardindex),
-                            CardAssembler.GetCardDamage(cardindex),
-                            CardAssembler.GetCardElement(cardindex),
-                            CardAssembler.GetCardType(cardindex),
+                            CardAssembler.GetCardName(cardIndex),
+                            CardAssembler.GetCardDamage(cardIndex),
+                            CardAssembler.GetCardElement(cardIndex),
+                            CardAssembler.GetCardType(cardIndex),
                             reader.GetBoolean(3),
                             reader.GetBoolean(4),
-                            cardindex
+                            cardIndex
                             );
                         return tmpCard;
                     }
@@ -77,17 +77,18 @@ namespace MonsterTradingCardsGame.Daos
                 {
                     while (reader.Read())
                     {
-                        int cardindex = reader.GetInt32(2);
+                        int cardIndex = reader.GetInt32(2);
                         Card tmpCard = new(
                             reader.GetGuid(0).ToString(),
                             reader.GetString(1),
-                            CardAssembler.GetCardName(cardindex),
-                            CardAssembler.GetCardDamage(cardindex),
-                            CardAssembler.GetCardElement(cardindex),
-                            CardAssembler.GetCardType(cardindex),
+                            CardAssembler.GetCardName(cardIndex),
+                            CardAssembler.GetCardDamage(cardIndex),
+                            CardAssembler.GetCardElement(cardIndex),
+                            CardAssembler.GetCardType(cardIndex),
                             reader.GetBoolean(3),
                             reader.GetBoolean(4),
-                            cardindex
+                            cardIndex,
+                            CardAssembler.GetCardDescription(cardIndex)
                             );
                         cards.Add(tmpCard);
                     }
@@ -150,7 +151,8 @@ namespace MonsterTradingCardsGame.Daos
                             CardAssembler.GetCardType(cardindex),
                             reader.GetBoolean(3),
                             reader.GetBoolean(4),
-                            cardindex
+                            cardindex,
+                            CardAssembler.GetCardDescription(cardindex)
                             );
                         cards.Add(tmpCard);
                     }

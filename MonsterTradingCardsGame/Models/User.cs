@@ -57,7 +57,7 @@ namespace MonsterTradingCardsGame.Models
             Username = username;
             Password = password;
             Coins = 20;
-            Elo = 1000;
+            Elo = 100;
             Wins = 0;
             GamesPlayed = 0;
             Bio = string.Empty;
@@ -91,7 +91,7 @@ namespace MonsterTradingCardsGame.Models
         }
         public string ShowStats()
         {
-            return $"{{ \"Name\": \"{Username}\", \"Elo\": \"{Elo}\", \"Wins\": \"{Wins}\", \"Losses\": \"{GamesPlayed - Wins}\" }}";
+            return $"{{ \"Name\": \"{Username}\", \"Elo\": \"{Elo}\", \"Wins\": \"{Wins}\", \"Losses\": \"{GamesPlayed - Wins}\", \"W / L\": \"{(GamesPlayed == 0 ? 0 : Math.Round((double)Wins / ((double)GamesPlayed - (double)Wins), 2).ToString().Replace(',', '.'))}\" }}";
         }
 
     }
