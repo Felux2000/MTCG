@@ -21,35 +21,6 @@ namespace MonsterTradingCardsGame.Models
         public string AuthToken { get; set; }
         public bool HasDeck { get; set; }
 
-        /*public void BuyPackage()
-        {
-            if (Coins > 5)
-            {
-                for (int i = 0; i < 5; i++)
-                {
-                    //Stack.Add(new Card());
-                }
-            }
-        }
-        public void ManageCards(int StackCardNr, int DeckCardNr)
-        {
-
-            if (StackCardNr < Stack?.Count)
-            {
-                if (!Stack[StackCardNr].InStore)
-                {
-                    if (Deck?.Count < 5)
-                    {
-                        Deck.Add(Stack[StackCardNr]);
-                    }
-                    else if (DeckCardNr < Deck?.Count && DeckCardNr < 5)
-                    {
-                        Deck[DeckCardNr] = Stack[StackCardNr];
-                    }
-                }
-            }
-        }
-        */
 
         //new user
         public User(string username, string password)
@@ -83,7 +54,7 @@ namespace MonsterTradingCardsGame.Models
 
         public string ShowData()
         {
-            return $"{{ \"Username\": \"{Username}\", \"Bio\": \"{Bio}\", \"Image\": \"{Image}\" }}";
+            return $"{{ \"Username\": \"{Username}\", \"Bio\": \"{Bio}\", \"Image\": \"{Image}\", \"Coins\": \"{Coins}\" }}";
         }
         public string ShowElo()
         {
@@ -91,7 +62,7 @@ namespace MonsterTradingCardsGame.Models
         }
         public string ShowStats()
         {
-            return $"{{ \"Name\": \"{Username}\", \"Elo\": \"{Elo}\", \"Wins\": \"{Wins}\", \"Losses\": \"{GamesPlayed - Wins}\", \"W / L\": \"{(GamesPlayed == 0 ? 0 : Math.Round((double)Wins / ((double)GamesPlayed - (double)Wins), 2).ToString().Replace(',', '.'))}\" }}";
+            return $"{{ \"Name\": \"{Username}\", \"Elo\": \"{Elo}\", \"Wins\": \"{Wins}\", \"Losses\": \"{GamesPlayed - Wins}\", \"W / L\": \"{(GamesPlayed == 0 ? 0 : ((GamesPlayed - Wins) == 0 ? Wins : Math.Round((double)Wins / ((double)GamesPlayed - (double)Wins), 2).ToString().Replace(',', '.')))}\" }}";
         }
 
     }

@@ -132,7 +132,12 @@ namespace MonsterTradingCardsGame.Controller
 
             try
             {
-                string offeredCardID = body.Trim().Trim('"').Trim();
+
+                string offeredCardID = string.Empty;
+                if (body != null)
+                {
+                    offeredCardID = body.Trim().Trim('"').Trim();
+                }
 
                 if (!IsAuthorized(username + "-mtcgToken"))
                 {

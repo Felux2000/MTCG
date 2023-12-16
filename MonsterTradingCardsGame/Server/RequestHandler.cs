@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Mime;
 using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Npgsql;
 
 namespace MonsterTradingCardsGame.Server
 {
@@ -39,19 +42,43 @@ namespace MonsterTradingCardsGame.Server
         public void SendResponse(Request request)
         {
             Response response;
-            if (request.Path == null)
+            try
             {
-                response = new Response(System.Net.HttpStatusCode.BadRequest, ContentType.JSON, "Pathname was not set");
+
+                if (request.Path == null)
+                {
+                    response = new Response(System.Net.HttpStatusCode.BadRequest, ContentType.JSON, "Pathname was not set");
+                }
+                else
+                {
+                    response = ResponseHandler.CreateResponse(request);
+                }
             }
-            else
+            catch (NpgsqlException e)
             {
-                response = ResponseHandler.CreateResponse(request);
+                Console.WriteLine(e.StackTrace);
+                response = new Response(HttpStatusCode.InternalServerError, ContentType.TEXT, $"null error: Internal Server Error \n");
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.StackTrace);
+                response = new Response(HttpStatusCode.InternalServerError, ContentType.TEXT, $"null error: Internal Server Error \n");
+            }
+            catch (NullReferenceException e)
+            {
+                Console.WriteLine(e.StackTrace);
+                response = new Response(HttpStatusCode.InternalServerError, ContentType.TEXT, $"null error: Internal Server Error \n");
+            }
+            catch (JsonException e)
+            {
+                Console.WriteLine(e.StackTrace);
+                response = new Response(HttpStatusCode.InternalServerError, ContentType.TEXT, $"null error: Internal Server Error \n");
             }
             using (StreamWriter writer = new(ClientStream))
             {
                 writer.Write(response.Build());
             }
-            Console.WriteLine($"ResponesRaw: {response.Build()} Content: {response.Content}");
+            //Console.WriteLine($"ResponesRaw: {response.Build()} Content: {response.Content}");
         }
 
         public void CloseRequest()

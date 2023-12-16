@@ -74,6 +74,7 @@ namespace MonsterTradingCardsGame.Controller
                     return SendResponse("null", "User does not exist", HttpStatusCode.NotFound, ContentType.TEXT);
                 }
                 List<Card> deck = cardDao.ReadDeck(user.Username);
+                Console.WriteLine(deck.Count);
                 if (deck.Count == 0)
                 {
                     return SendResponse("No Cards in the Deck", "null", HttpStatusCode.NoContent, ContentType.TEXT);
@@ -233,7 +234,6 @@ namespace MonsterTradingCardsGame.Controller
                 foreach (string cardID in cardIDs)
                 {
                     Card tmpCard = cardDao.Read(cardID);
-                    Console.WriteLine($"{tmpCard.Username} {user.Username} {tmpCard.InStore}");
                     if (tmpCard == null)
                     {
                         return SendResponse("null", "Card does not exist", HttpStatusCode.NotFound, ContentType.TEXT);

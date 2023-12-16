@@ -33,13 +33,13 @@ namespace MonsterTradingCardsGame.Controller
                 Console.WriteLine(e.StackTrace);
                 return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
             }
-            if (user.AuthToken != authtoken)
-            {
-                return SendResponse("null", "Access token is missing or invalid", HttpStatusCode.Forbidden, ContentType.TEXT);
-            }
             if (user == null)
             {
                 return SendResponse("null", "User not found", HttpStatusCode.NotFound, ContentType.TEXT);
+            }
+            if (user.AuthToken != authtoken)
+            {
+                return SendResponse("null", "Access token is missing or invalid", HttpStatusCode.Forbidden, ContentType.TEXT);
             }
             string userDataJson = user.ShowData();
             return SendResponse(userDataJson, "null", HttpStatusCode.OK, ContentType.JSON);
@@ -130,7 +130,7 @@ namespace MonsterTradingCardsGame.Controller
                 }
 
                 User user;
-                //try
+                try
                 {
                     user = userDao.Read(username);
                     if (user != null)
@@ -140,11 +140,11 @@ namespace MonsterTradingCardsGame.Controller
                     user = new(username, password);
                     userDao.Create(user);
                 }
-                /*  catch (NpgsqlException e)
-                  {
-                      Console.WriteLine(e.StackTrace);
-                      return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
-                  }*/
+                catch (NpgsqlException e)
+                {
+                    Console.WriteLine(e.StackTrace);
+                    return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                }
                 return SendResponse("User successfully created", "null", HttpStatusCode.Created, ContentType.TEXT);
             }
             catch (JsonException e)
@@ -183,6 +183,34 @@ namespace MonsterTradingCardsGame.Controller
                 user.AuthToken = $"{username}-mtcgToken";
                 userDao.Update(user);
                 return SendResponse(user.AuthToken, "null", HttpStatusCode.OK, ContentType.JSON);
+            }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.StackTrace);
+                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+            }
+        }
+
+        public Response AquireCoins(string username, string body)
+        {
+            JObject jsonCoins = JsonConvert.DeserializeObject<JObject>(body.ToString());
+            int newCoins = (int)jsonCoins["Coins"];
+            try
+            {
+                User user;
+
+                user = userDao.Read(username);
+                if (user == null)
+                {
+                    return SendResponse("null", "User not found", HttpStatusCode.NotFound, ContentType.TEXT);
+                }
+                if (!IsAuthorized(username + "-mtcgToken"))
+                {
+                    return SendResponse("null", "Incorrect Token", HttpStatusCode.Unauthorized, ContentType.TEXT);
+                }
+                user.Coins += newCoins;
+                userDao.Update(user);
+                return SendResponse("Coins sucessfully added", "null", HttpStatusCode.OK, ContentType.JSON);
             }
             catch (NpgsqlException e)
             {

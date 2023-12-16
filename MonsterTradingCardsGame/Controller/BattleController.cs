@@ -23,7 +23,7 @@ namespace MonsterTradingCardsGame.Controller
 
         public Response HaveBattle(string username)
         {
-            // try
+            try
             {
                 if (!IsAuthorized(username + "-mtcgToken"))
                 {
@@ -73,11 +73,11 @@ namespace MonsterTradingCardsGame.Controller
                 userDao.Update(battle.Requestor);
                 return SendResponse(battle.BattleLog, "null", HttpStatusCode.OK, ContentType.TEXT);
             }
-            /*   catch (NpgsqlException e)
-               {
-                   Console.WriteLine(e.StackTrace);
-                   return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
-               }*/
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.StackTrace);
+                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+            }
         }
     }
 }

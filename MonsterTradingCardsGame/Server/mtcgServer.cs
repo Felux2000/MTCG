@@ -19,15 +19,15 @@ namespace MonsterTradingCardsGame.Server
         {
             ResponsHandler = responseHandler;
             Port = 10001;
-        }
-
-        public void Start()
-        {
             ServerSocket = new Socket(
             AddressFamily.InterNetwork,
             SocketType.Stream,
             ProtocolType.Tcp
             );
+        }
+
+        public void Start()
+        {
             ServerSocket.Bind(new IPEndPoint(IPAddress.Loopback, Port));
             ServerSocket.Listen(5);
             Run();
@@ -55,15 +55,15 @@ namespace MonsterTradingCardsGame.Server
 
         private static void ThreadFunc(ResponseHandler responseHandler, Socket clientSocket)
         {
-            //try
+            try
             {
                 _ = new RequestHandler(responseHandler, clientSocket);
 
             }
-            /* catch (NpgsqlException e)
-             {
-                 Console.WriteLine(e.StackTrace);
-             }
+            catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.StackTrace);
+            }
             catch (ArgumentException e)
             {
                 Console.WriteLine(e.StackTrace);
@@ -75,7 +75,7 @@ namespace MonsterTradingCardsGame.Server
             catch (JsonException e)
             {
                 Console.WriteLine(e.StackTrace);
-            }*/
+            }
         }
     }
 }

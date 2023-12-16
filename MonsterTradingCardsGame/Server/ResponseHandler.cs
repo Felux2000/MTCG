@@ -113,6 +113,14 @@ namespace MonsterTradingCardsGame.Server
                             }
                             return CardController.AssembleDeck(request.Body, GetUsernameFromToken(request.AuthToken));
                         }
+                        else if (request.Path == "/coins")
+                        {
+                            if (request.AuthToken == null)
+                            {
+                                return new Response(HttpStatusCode.Unauthorized, ContentType.TEXT, $"null error: Access token is missing or invalid \n");
+                            }
+                            return UserController.AquireCoins(GetUsernameFromToken(request.AuthToken), request.Body);
+                        }
                         else if (Regex.IsMatch(request.Path, "/users/[a-zA-Z]+"))
                         {
                             if (CompareAuthTokenToUser(request.AuthToken, GetIDFromPath(splitPath)))
@@ -139,7 +147,8 @@ namespace MonsterTradingCardsGame.Server
                     }
 
             }
-            return new Response(HttpStatusCode.NotFound, ContentType.TEXT, $"null error: Method not found \n");
+
+            return new Response(HttpStatusCode.NotFound, ContentType.TEXT, $"null error: Method {request.Path} not found \n");
         }
 
         public static string GetIDFromPath(string[] split)

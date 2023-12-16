@@ -39,7 +39,7 @@ namespace MonsterTradingCardsGame.Controller
             }
             else
             {
-                return new(statusCode, ContentType.JSON, $"{data} error: {error} \n");
+                return new(statusCode, ContentType.TEXT, $"{data} error: {error} \n");
             }
         }
     }
