@@ -21,13 +21,14 @@ namespace MonsterTradingCardsGame.Daos
 
         public void Create(TradingDeal trade)
         {
-            string query = "INSERT INTO tradingdeals (tradeid, offeredcardid, cardtype, mindamage, username) VALUES (@tradeid, @offeredcardid, @cardtype, @mindamage, @username);";
+            string query = "INSERT INTO tradingdeals (tradeid, offeredcardid, cardtype, mindamage, coins, username) VALUES (@tradeid, @offeredcardid, @cardtype, @mindamage, @coins, @username);";
             using (var cmd = DbConnection.CreateCommand(query))
             {
                 cmd.Parameters.AddWithValue("tradeid", Guid.Parse(trade.Id));
                 cmd.Parameters.AddWithValue("offeredcardid", Guid.Parse(trade.CardToTrade));
                 cmd.Parameters.AddWithValue("cardtype", (int)trade.Type);
                 cmd.Parameters.AddWithValue("mindamage", trade.MinimumDamage);
+                cmd.Parameters.AddWithValue("coins", trade.CoinCost);
                 cmd.Parameters.AddWithValue("username", trade.Username);
                 cmd.ExecuteNonQuery();
             }
@@ -35,7 +36,7 @@ namespace MonsterTradingCardsGame.Daos
 
         public TradingDeal Read(string tradeid)
         {
-            string query = "SELECT tradeid, offeredcardid, cardtype, mindamage, username FROM tradingdeals WHERE tradeid = @tradeid;";
+            string query = "SELECT tradeid, offeredcardid, cardtype, mindamage, coins, username FROM tradingdeals WHERE tradeid = @tradeid;";
             using (var cmd = DbConnection.CreateCommand(query))
             {
                 cmd.Parameters.AddWithValue("tradeid", Guid.Parse(tradeid));
@@ -48,7 +49,8 @@ namespace MonsterTradingCardsGame.Daos
                             reader.GetGuid(1).ToString(),
                             reader.GetInt32(2),
                             reader.GetDouble(3),
-                            reader.GetString(4)
+                            reader.GetInt32(4),
+                            reader.GetString(5)
                             );
                         return tmpDeal;
                     }
@@ -63,7 +65,7 @@ namespace MonsterTradingCardsGame.Daos
         public List<TradingDeal> ReadAll()
         {
             List<TradingDeal> tradeList = new();
-            string query = "SELECT tradeid, offeredcardid, cardtype, mindamage, username FROM tradingdeals;";
+            string query = "SELECT tradeid, offeredcardid, cardtype, mindamage, coins, username FROM tradingdeals;";
             using (var cmd = DbConnection.CreateCommand(query))
             {
                 using (var reader = cmd.ExecuteReader())
@@ -75,7 +77,8 @@ namespace MonsterTradingCardsGame.Daos
                             reader.GetGuid(1).ToString(),
                             reader.GetInt32(2),
                             reader.GetDouble(3),
-                            reader.GetString(4)
+                            reader.GetInt32(4),
+                            reader.GetString(5)
                             );
                         tradeList.Add(tmpDeal);
                     }

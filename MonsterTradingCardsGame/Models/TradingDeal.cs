@@ -23,13 +23,15 @@ namespace MonsterTradingCardsGame.Models
         public string CardToTrade { get; }
         public CardType Type { get; }
         public double MinimumDamage { get; }
+        public int CoinCost { get; }
         public string Username { get; set; }
 
-        public TradingDeal(string Id, string CardToTrade, int Type, double MinimumDamage, string username = "")
+        public TradingDeal(string Id, string CardToTrade, int Type, double MinimumDamage, int CoinCost, string username = "")
         {
             this.Id = Id;
             this.CardToTrade = CardToTrade;
             this.MinimumDamage = MinimumDamage;
+            this.CoinCost = CoinCost;
             Username = username;
             switch (Type)
             {
@@ -39,23 +41,25 @@ namespace MonsterTradingCardsGame.Models
             }
         }
         [JsonConstructor]
-        public TradingDeal(string Id, string CardToTrade, string Type, double MinimumDamage, string username = "")
+        public TradingDeal(string Id, string CardToTrade, string Type, double MinimumDamage, int CoinCost, string username = "")
         {
             this.Id = Id;
             this.CardToTrade = CardToTrade;
-            this.MinimumDamage = MinimumDamage;
+            this.MinimumDamage = MinimumDamage >= 0 ? MinimumDamage : 0;
+            this.CoinCost = CoinCost >= 0 ? CoinCost : 0;
             Username = username;
             switch (Type)
             {
                 case "monster": this.Type = CardType.monster; break;
                 case "spell": this.Type = CardType.spell; break;
                 case "effect": this.Type = CardType.effect; break;
+                default: throw new ArgumentException();
             }
         }
 
         public string ShowDeal()
         {
-            return $"{{ \"Id\": \"{Id}\", \"CardToTrade\": \"{CardToTrade}\", \"Type\": \"{typeToString[Type]}\", \"MinimumDamage\": \"{MinimumDamage}\" }}";
+            return $"{{ \"Id\": \"{Id}\", \"CardToTrade\": \"{CardToTrade}\", \"Type\": \"{typeToString[Type]}\", \"MinimumDamage\": \"{MinimumDamage}\", \"CoinCost\": \"{CoinCost}\" }}";
         }
     }
 }

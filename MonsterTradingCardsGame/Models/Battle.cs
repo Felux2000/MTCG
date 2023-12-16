@@ -37,7 +37,7 @@ namespace MonsterTradingCardsGame.Models
                 _effectDamage[cardOne.Name] = DamageOne;
                 if (DamageOne > 1)
                 {
-                    BattleLog = $"{BattleLog}{cardOne.Name} -> boosts {Requestor.Username}'s cards damage by {(DamageOne - 1) * 100}% for two rounds, ";
+                    BattleLog = $"{BattleLog}{cardOne.Name} -> boosts {Requestor.Username}'s cards damage by {DecimalReplace((DamageOne - 1) * 100)}% for two rounds, ";
                     if (_effectDurationOne.ContainsKey(cardOne.Name))
                     {
                         _effectDurationOne[cardOne.Name] += EffectDuration;
@@ -49,7 +49,7 @@ namespace MonsterTradingCardsGame.Models
                 }
                 else
                 {
-                    BattleLog = $"{BattleLog}{cardOne.Name} -> decreases {Opponent.Username}'s cards damage by {(1 - DamageOne) * 100}% for two rounds, ";
+                    BattleLog = $"{BattleLog}{cardOne.Name} -> decreases {Opponent.Username}'s cards damage by {DecimalReplace((1 - DamageOne) * 100)}% for two rounds, ";
                     if (_effectDurationTwo.ContainsKey(cardOne.Name))
                     {
                         _effectDurationTwo[cardOne.Name] += EffectDuration;
@@ -73,7 +73,7 @@ namespace MonsterTradingCardsGame.Models
                 _effectDamage[cardTwo.Name] = DamageTwo;
                 if (DamageTwo > 1)
                 {
-                    BattleLog = $"{BattleLog}{cardTwo.Name} -> boosts {Opponent.Username}'s cards damage by {(DamageTwo - 1) * 100}% for two rounds\n";
+                    BattleLog = $"{BattleLog}{cardTwo.Name} -> boosts {Opponent.Username}'s cards damage by {DecimalReplace((DamageTwo - 1) * 100)}% for two rounds\n";
                     if (_effectDurationTwo.ContainsKey(cardTwo.Name))
                     {
                         _effectDurationTwo[cardTwo.Name] += EffectDuration;
@@ -85,7 +85,7 @@ namespace MonsterTradingCardsGame.Models
                 }
                 else
                 {
-                    BattleLog = $"{BattleLog}{cardTwo.Name} -> decreases {Requestor.Username}'s cards damage by {(1 - DamageTwo) * 100}% for two rounds\n";
+                    BattleLog = $"{BattleLog}{cardTwo.Name} -> decreases {Requestor.Username}'s cards damage by {DecimalReplace((1 - DamageTwo) * 100)}% for two rounds\n";
                     if (_effectDurationOne.ContainsKey(cardTwo.Name))
                     {
                         _effectDurationOne[cardTwo.Name] += EffectDuration;
@@ -99,7 +99,7 @@ namespace MonsterTradingCardsGame.Models
             }
             else
             {
-                BattleLog = $"{BattleLog}{cardTwo.Name} -> {DecimalReplace(DamageOneRaw)}\n";
+                BattleLog = $"{BattleLog}{cardTwo.Name} -> {DecimalReplace(DamageTwoRaw)}\n";
             }
 
             CalculateDamageMultipliers();
@@ -108,7 +108,7 @@ namespace MonsterTradingCardsGame.Models
 
             if (_dmgMultiplierOne != 1 || _dmgMultiplierTwo != 1)
             {
-                BattleLog = $"{BattleLog}This rounds damage effectiveness: {Requestor.Username} -> {_dmgMultiplierOne * 100}% --- {Opponent.Username} -> {_dmgMultiplierTwo * 100}%\n";
+                BattleLog = $"{BattleLog}This rounds damage effectiveness: {Requestor.Username} -> {DecimalReplace(_dmgMultiplierOne * 100)}% --- {Opponent.Username} -> {DecimalReplace(_dmgMultiplierTwo * 100)}%\n";
             }
             BattleLog = $"{BattleLog}Final damage: {cardOne.Name} -> {DecimalReplace(DamageOne)} --- {cardTwo.Name} -> {DecimalReplace(DamageTwo)}\n";
 
@@ -127,9 +127,9 @@ namespace MonsterTradingCardsGame.Models
 
         }
 
-        private static string DecimalReplace(double damage)
+        private static string DecimalReplace(double number)
         {
-            return $"{damage}".Replace(',', '.');
+            return $"{Math.Round(number, 2)}".Replace(',', '.');
         }
 
         private static int CalculateElo(int eloCalc, int eloRef, bool winner)

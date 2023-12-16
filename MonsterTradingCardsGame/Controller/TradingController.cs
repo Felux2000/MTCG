@@ -78,6 +78,7 @@ namespace MonsterTradingCardsGame.Controller
                 {
                     return SendResponse("null", "TradeID or CardToTradeID not set", HttpStatusCode.BadRequest, ContentType.TEXT);
                 }
+
                 trade.Username = user.Username;
                 //check if card belongs to user
                 Card cardOffered = cardDao.Read(trade.CardToTrade);
@@ -113,10 +114,22 @@ namespace MonsterTradingCardsGame.Controller
                 Console.WriteLine(e.StackTrace);
                 return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
             }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.StackTrace);
+                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+            }
         }
 
         public Response TakeTradingDeal(string tradeID, string body, string username)
         {
+            bool coinTrade = false;
+            Card offeredCard = null;
+            Card cardInTrade;
+            TradingDeal trade;
+            User acceptUser;
+            User offerUser;
+
             try
             {
                 string offeredCardID = body.Trim().Trim('"').Trim();
@@ -125,61 +138,87 @@ namespace MonsterTradingCardsGame.Controller
                 {
                     return SendResponse("null", "Incorrect Token", HttpStatusCode.Unauthorized, ContentType.TEXT);
                 }
-                if (offeredCardID == string.Empty)
-                {
-                    return SendResponse("null", "No Card offered", HttpStatusCode.NotFound, ContentType.TEXT);
-                }
-                //check if Card exists
-                Card offeredCard = cardDao.Read(offeredCardID);
-                if (offeredCard == null)
-                {
-                    return SendResponse("null", "Offered Card does not exist", HttpStatusCode.NotFound, ContentType.TEXT);
-                }
-                //check if offered Card belongs to user
-                User user = userDao.Read(username);
-                if (user == null)
-                {
-                    return SendResponse("null", "User does not exist", HttpStatusCode.NotFound, ContentType.TEXT);
-                }
-                if (offeredCard.Username != user.Username)
-                {
-                    return SendResponse("null", "Offered Card does not belong to User", HttpStatusCode.Forbidden, ContentType.TEXT);
-                }
-                //check if in Deck
-                if (offeredCard.InDeck || offeredCard.InStore)
-                {
-                    return SendResponse("null", "Offered Card in Deck or already in a TradingDeal", HttpStatusCode.Forbidden, ContentType.TEXT);
-                }
-
                 //check if tradingDeal exists
-                TradingDeal trade = tradeDao.Read(tradeID);
+                trade = tradeDao.Read(tradeID);
                 if (trade == null)
                 {
                     return SendResponse("null", "TradingDeal does not exist", HttpStatusCode.NotFound, ContentType.TEXT);
                 }
+                if (trade.MinimumDamage == 0)
+                {
+                    coinTrade = true;
+                }
+                if (offeredCardID == string.Empty && !coinTrade)
+                {
+                    return SendResponse("null", "No Card offered", HttpStatusCode.NotFound, ContentType.TEXT);
+                }
+
+                acceptUser = userDao.Read(username);
+                if (acceptUser == null)
+                {
+                    return SendResponse("null", "User does not exist", HttpStatusCode.NotFound, ContentType.TEXT);
+                }
                 //check if trying to trade with self
-                if (trade.Username == user.Username)
+                if (trade.Username == acceptUser.Username)
                 {
                     return SendResponse("null", "Trying to trade with self", HttpStatusCode.Forbidden, ContentType.TEXT);
                 }
-
-                //check if requirements met
-                if (offeredCard.Damage < trade.MinimumDamage || offeredCard.Type != trade.Type)
+                if (!coinTrade)
                 {
-                    return SendResponse("null", "Offered Card does not meet requirements", HttpStatusCode.Forbidden, ContentType.TEXT);
-                }
-                //carry out trade -> update offeredCard UID and cardInTrade UID + paused
-                //so beide für gleichen user
-                string tradeOfferUser = trade.Username;
-                string tradeAcceptUser = user.Username;
-                Card cardInTrade = cardDao.Read(trade.CardToTrade);
 
-                offeredCard.Username = tradeOfferUser;
+                    //check if Card exists
+                    offeredCard = cardDao.Read(offeredCardID);
+                    if (offeredCard == null)
+                    {
+                        return SendResponse("null", "Offered Card does not exist", HttpStatusCode.NotFound, ContentType.TEXT);
+                    }
+                    //check if offered Card belongs to user
+                    if (offeredCard.Username != acceptUser.Username)
+                    {
+                        return SendResponse("null", "Offered Card does not belong to User", HttpStatusCode.Forbidden, ContentType.TEXT);
+                    }
+                    //check if in Deck
+                    if (offeredCard.InDeck || offeredCard.InStore)
+                    {
+                        return SendResponse("null", "Offered Card in Deck or already in a TradingDeal", HttpStatusCode.Forbidden, ContentType.TEXT);
+                    }
+                    //check if requirements met
+                    if (offeredCard.Damage < trade.MinimumDamage || offeredCard.Type != trade.Type || acceptUser.Coins < trade.CoinCost)
+                    {
+                        return SendResponse("null", "Offered Card does not meet requirements or not enough coins", HttpStatusCode.Forbidden, ContentType.TEXT);
+                    }
+                }
+                else
+                {
+                    if (acceptUser.Coins < trade.CoinCost)
+                    {
+                        return SendResponse("null", "Not enough coins", HttpStatusCode.Forbidden, ContentType.TEXT);
+                    }
+                }
+
+
+                //carry out trade -> update offeredCard UID and cardInTrade UID + paused + coins
+                offerUser = userDao.Read(trade.Username);
+                string tradeOfferUser = offerUser.Username;
+                string tradeAcceptUser = acceptUser.Username;
+                cardInTrade = cardDao.Read(trade.CardToTrade);
+
+                if (!coinTrade)
+                {
+                    offeredCard.Username = tradeOfferUser;
+                    cardDao.Update(offeredCard);
+                }
                 cardInTrade.Username = tradeAcceptUser;
                 cardInTrade.InStore = false;
-                cardDao.Update(offeredCard);
                 cardDao.Update(cardInTrade);
+
+                offerUser.Coins += trade.CoinCost;
+                acceptUser.Coins -= trade.CoinCost;
+                userDao.Update(offerUser);
+                userDao.Update(acceptUser);
+
                 tradeDao.Delete(trade.Id);
+
                 return SendResponse("Trading deal successfully executed", "null", HttpStatusCode.OK, ContentType.TEXT);
 
             }
