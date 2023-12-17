@@ -21,10 +21,12 @@ namespace MonsterTradingCardsGame.Controller
     {
         CardDao cardDao;
         TradeDao tradeDao;
+        TransactionDao transactionDao;
         public TradingController(NpgsqlDataSource dbConnection) : base(dbConnection)
         {
             cardDao = new(dbConnection);
             tradeDao = new(dbConnection);
+            transactionDao = new(dbConnection);
         }
 
         public Response GetTradingDeals(string authToken)
@@ -221,6 +223,11 @@ namespace MonsterTradingCardsGame.Controller
                 acceptUser.Coins -= trade.CoinCost;
                 userDao.Update(offerUser);
                 userDao.Update(acceptUser);
+
+                Transaction transactionBuyer = new(acceptUser.Username, Guid.Parse(cardInTrade.CardID), offerUser.Username, coinTrade ? Guid.Empty : Guid.Parse(offeredCard.CardID), -trade.CoinCost, TransactionType.trade);
+                Transaction transactionSeller = new(offerUser.Username, coinTrade ? Guid.Empty : Guid.Parse(offeredCard.CardID), acceptUser.Username, Guid.Parse(cardInTrade.CardID), trade.CoinCost, TransactionType.trade);
+                transactionDao.Create(transactionBuyer);
+                transactionDao.Create(transactionSeller);
 
                 tradeDao.Delete(trade.Id);
 

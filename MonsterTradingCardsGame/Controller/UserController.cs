@@ -16,8 +16,10 @@ namespace MonsterTradingCardsGame.Controller
 {
     internal class UserController : Controller
     {
+        TransactionDao transactionDao;
         public UserController(NpgsqlDataSource dbConnection) : base(dbConnection)
         {
+            transactionDao = new(dbConnection);
         }
 
         //GET /users/username
@@ -210,6 +212,10 @@ namespace MonsterTradingCardsGame.Controller
                 }
                 user.Coins += newCoins;
                 userDao.Update(user);
+
+                Transaction transaction = new(user.Username, Guid.Empty, "admin", Guid.Empty, newCoins, TransactionType.coinBuy);
+                transactionDao.Create(transaction);
+
                 return SendResponse("Coins sucessfully added", "null", HttpStatusCode.OK, ContentType.JSON);
             }
             catch (NpgsqlException e)

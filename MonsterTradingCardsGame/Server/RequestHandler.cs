@@ -78,7 +78,6 @@ namespace MonsterTradingCardsGame.Server
             {
                 writer.Write(response.Build());
             }
-            //Console.WriteLine($"ResponesRaw: {response.Build()} Content: {response.Content}");
         }
 
         public void CloseRequest()

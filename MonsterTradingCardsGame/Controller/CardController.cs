@@ -22,10 +22,12 @@ namespace MonsterTradingCardsGame.Controller
     {
         CardDao cardDao;
         PackageDao packageDao;
+        TransactionDao transactionDao;
         public CardController(NpgsqlDataSource dbConnection) : base(dbConnection)
         {
             cardDao = new(dbConnection);
             packageDao = new(dbConnection);
+            transactionDao = new(dbConnection);
         }
 
         public Response GetUserCards(string username)
@@ -135,7 +137,7 @@ namespace MonsterTradingCardsGame.Controller
                 {
                     cardDao.Create(card);
                 }
-                Package newPackage = new(cardId);
+                Package newPackage = new(cards);
                 packageDao.Create(newPackage);
                 return SendResponse("Package and cards successfully created", "null", HttpStatusCode.Created, ContentType.TEXT);
 
@@ -156,6 +158,7 @@ namespace MonsterTradingCardsGame.Controller
         {
             try
             {
+                int packageCost = 5;
                 if (!IsAuthorized(username + "-mtcgToken"))
                 {
                     return SendResponse("null", "Incorrect Token", HttpStatusCode.Unauthorized, ContentType.TEXT);
@@ -170,22 +173,26 @@ namespace MonsterTradingCardsGame.Controller
                     return SendResponse("null", "Not enough money for buying a card package", HttpStatusCode.Forbidden, ContentType.TEXT);
                 }
                 //get one package
-                List<Card> packageCards = packageDao.ReadPackage();
-                if (packageCards == null)
+                Package package = packageDao.ReadPackage();
+                if (package == null)
                 {
                     return SendResponse("null", "No card package available for buying", HttpStatusCode.NotFound, ContentType.TEXT);
                 }
                 //change UID of cards in cards in cards table
-                foreach (Card card in packageCards)
+                foreach (Card card in package.Cards)
                 {
                     card.Username = user.Username;
                     cardDao.Update(card);
                 }
                 //deduct user money
-                user.Coins -= 5;
+                user.Coins -= packageCost;
                 userDao.Update(user);
+
+                Transaction transaction = new(user.Username, package.ID, "admin", Guid.Empty, -packageCost, TransactionType.package);
+                transactionDao.Create(transaction);
+
                 string packageDataJson = "[";
-                packageDataJson = $"{packageDataJson}{CardData(packageCards)}";
+                packageDataJson = $"{packageDataJson}{CardData(package.Cards)}";
                 packageDataJson = $"{packageDataJson}]";
                 return SendResponse(packageDataJson, "null", HttpStatusCode.OK, ContentType.JSON);
 

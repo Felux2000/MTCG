@@ -94,13 +94,6 @@ namespace MonsterTradingCardsGame.Server
                             }
                         }
                     }
-
-                    Console.WriteLine(HttpMethod);
-                    Console.WriteLine(Path);
-                    Console.WriteLine(Params);
-                    Console.WriteLine(ContentType);
-                    Console.WriteLine(ContentLength);
-                    Console.WriteLine(Body);
                 }
             }
             catch (IOException e)

@@ -22,32 +22,34 @@ namespace MonsterTradingCardsGame.Daos
 
         public void Create(Package package)
         {
-            string query = "INSERT INTO \"packages\" (idone, idtwo, idthree, idfour, idfive) VALUES (@idone, @idtwo, @idthree, @idfour, @idfive)";
+            string query = "INSERT INTO \"packages\" (packageid, idone, idtwo, idthree, idfour, idfive) VALUES (@packageid, @idone, @idtwo, @idthree, @idfour, @idfive)";
             using (var cmd = DbConnection.CreateCommand(query))
             {
-                cmd.Parameters.AddWithValue("idone", Guid.Parse(package.CardID[0]));
-                cmd.Parameters.AddWithValue("idtwo", Guid.Parse(package.CardID[1]));
-                cmd.Parameters.AddWithValue("idthree", Guid.Parse(package.CardID[2]));
-                cmd.Parameters.AddWithValue("idfour", Guid.Parse(package.CardID[3]));
-                cmd.Parameters.AddWithValue("idfive", Guid.Parse(package.CardID[4]));
+                cmd.Parameters.AddWithValue("packageid", package.ID);
+                cmd.Parameters.AddWithValue("idone", Guid.Parse(package.Cards[0].CardID));
+                cmd.Parameters.AddWithValue("idtwo", Guid.Parse(package.Cards[1].CardID));
+                cmd.Parameters.AddWithValue("idthree", Guid.Parse(package.Cards[2].CardID));
+                cmd.Parameters.AddWithValue("idfour", Guid.Parse(package.Cards[3].CardID));
+                cmd.Parameters.AddWithValue("idfive", Guid.Parse(package.Cards[4].CardID));
                 cmd.ExecuteNonQuery();
             }
         }
 
-        public List<Card> ReadPackage()
+        public Package ReadPackage()
         {
+            Package package;
             List<Card> cards = new();
 
             Monitor.Enter(this);
-            string query = "SELECT packageid, cardid, username, cardindex FROM cards JOIN packages ON cardid = idone OR cardid = idtwo OR cardid = idthree OR cardid = idfour OR cardid = idfive ORDER BY packageid LIMIT 5;";
+            string query = "SELECT packageid, cardid, username, cardindex FROM cards JOIN packages ON cardid = idone OR cardid = idtwo OR cardid = idthree OR cardid = idfour OR cardid = idfive ORDER BY timestamp LIMIT 5;";
             using (var cmd = DbConnection.CreateCommand(query))
             {
                 using (var reader = cmd.ExecuteReader())
                 {
-                    int packageID = -1;
+                    Guid packageID = Guid.Empty;
                     while (reader.Read())
                     {
-                        packageID = reader.GetInt32(0);
+                        packageID = reader.GetGuid(0);
                         int cardIndex = reader.GetInt32(3);
                         Card tmpCard = new(
                             reader.GetGuid(1).ToString(),
@@ -69,14 +71,15 @@ namespace MonsterTradingCardsGame.Daos
                         Monitor.Exit(this);
                         return null;
                     }
+                    package = new(cards, packageID);
                     Delete(packageID);
                     Monitor.Exit(this);
-                    return cards;
+                    return package;
                 }
             }
         }
 
-        public void Delete(int packageid)
+        public void Delete(Guid packageid)
         {
             string query = "DELETE FROM packages WHERE packageid = @packageid;";
             using (var cmd = DbConnection.CreateCommand(query))

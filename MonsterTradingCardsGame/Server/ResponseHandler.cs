@@ -20,6 +20,7 @@ namespace MonsterTradingCardsGame.Server
         private CardController CardController;
         private TradingController TradingController;
         private BattleController BattleController;
+        private TransactionController TransactionController;
         public ResponseHandler(NpgsqlDataSource dbConnection)
         {
             DbConnection = dbConnection;
@@ -27,6 +28,7 @@ namespace MonsterTradingCardsGame.Server
             CardController = new(DbConnection);
             TradingController = new(DbConnection);
             BattleController = new(DbConnection);
+            TransactionController = new(DbConnection);
         }
 
         public Response CreateResponse(Request request)
@@ -50,8 +52,17 @@ namespace MonsterTradingCardsGame.Server
                             case "/scoreboard":
                                 return UserController.GetScoreBoard(request.AuthToken);
                             case "/tradings": return TradingController.GetTradingDeals(request.AuthToken);
+                            case "/transactions": return TransactionController.GetAll(request.AuthToken);
                         }
-                        if (Regex.IsMatch(request.Path, "/users/[a-zA-Z]+"))
+                        if (Regex.IsMatch(request.Path, "/transactions/[a-zA-Z]+"))
+                        {
+                            if (CompareAuthTokenToUser(request.AuthToken, GetIDFromPath(splitPath)))
+                            {
+                                return TransactionController.GetFromUser(GetIDFromPath(splitPath), request.AuthToken);
+                            }
+                            return new Response(HttpStatusCode.Unauthorized, ContentType.TEXT, $"null error: Access token is missing or invalid \n");
+                        }
+                        else if (Regex.IsMatch(request.Path, "/users/[a-zA-Z]+"))
                         {
                             if (CompareAuthTokenToUser(request.AuthToken, GetIDFromPath(splitPath)))
                             {
