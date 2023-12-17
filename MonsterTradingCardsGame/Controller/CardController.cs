@@ -23,11 +23,13 @@ namespace MonsterTradingCardsGame.Controller
         CardDao cardDao;
         PackageDao packageDao;
         TransactionDao transactionDao;
-        public CardController(NpgsqlDataSource dbConnection) : base(dbConnection)
+        CardBuilder cardBuilder;
+        public CardController(NpgsqlDataSource dbConnection) : base(new(dbConnection))
         {
             cardDao = new(dbConnection);
             packageDao = new(dbConnection);
             transactionDao = new(dbConnection);
+            cardBuilder = new();
         }
 
         public Response GetUserCards(string username)
@@ -123,7 +125,7 @@ namespace MonsterTradingCardsGame.Controller
                     {
                         return SendResponse("null", "Invalid Information for card declaration", HttpStatusCode.BadRequest, ContentType.TEXT);
                     }
-                    Card tmpCard = new(cardId[i], "admin", false, false, cardIndex);
+                    Card tmpCard = new(cardId[i], "admin", cardBuilder.GetCardName(cardIndex), cardBuilder.GetCardDamage(cardIndex), cardBuilder.GetCardElement(cardIndex), cardBuilder.GetCardType(cardIndex), false, false, cardIndex);
                     cards.Add(tmpCard);
                 }
                 foreach (string id in cardId)
@@ -151,6 +153,11 @@ namespace MonsterTradingCardsGame.Controller
             {
                 Console.WriteLine(e.StackTrace);
                 return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+            }
+            catch (IndexOutOfRangeException e)
+            {
+                Console.WriteLine(e.StackTrace);
+                return SendResponse("null", "Card index unknown", HttpStatusCode.Conflict, ContentType.TEXT);
             }
         }
 

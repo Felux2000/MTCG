@@ -16,7 +16,7 @@ namespace MonsterTradingCardsGame.Controller
     internal class BattleController : Controller
     {
         CardDao cardDao;
-        public BattleController(NpgsqlDataSource dbConnection) : base(dbConnection)
+        public BattleController(NpgsqlDataSource dbConnection) : base(new(dbConnection))
         {
             cardDao = new(dbConnection);
         }

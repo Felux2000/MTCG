@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Text.RegularExpressions;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using Npgsql;
 using System.Net;
 using MonsterTradingCardsGame.Controller;

@@ -38,6 +38,7 @@ namespace MonsterTradingCardsGame.Models
                 case 0: this.Type = CardType.monster; break;
                 case 1: this.Type = CardType.spell; break;
                 case 2: this.Type = CardType.effect; break;
+                default: throw new ArgumentException();
             }
         }
         [JsonConstructor]

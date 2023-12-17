@@ -22,7 +22,7 @@ namespace MonsterTradingCardsGame.Controller
         CardDao cardDao;
         TradeDao tradeDao;
         TransactionDao transactionDao;
-        public TradingController(NpgsqlDataSource dbConnection) : base(dbConnection)
+        public TradingController(NpgsqlDataSource dbConnection) : base(new(dbConnection))
         {
             cardDao = new(dbConnection);
             tradeDao = new(dbConnection);
@@ -54,6 +54,11 @@ namespace MonsterTradingCardsGame.Controller
                 return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
             }
             catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.StackTrace);
+                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+            }
+            catch (ArgumentException e)
             {
                 Console.WriteLine(e.StackTrace);
                 return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
@@ -244,6 +249,11 @@ namespace MonsterTradingCardsGame.Controller
                 Console.WriteLine(e.StackTrace);
                 return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
             }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.StackTrace);
+                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+            }
         }
 
         public Response DeleteTradingDeal(string tradeID, string username)
@@ -283,6 +293,11 @@ namespace MonsterTradingCardsGame.Controller
                 return SendResponse("Trading deal successfully deleted", "null", HttpStatusCode.OK, ContentType.TEXT);
             }
             catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.StackTrace);
+                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+            }
+            catch (ArgumentException e)
             {
                 Console.WriteLine(e.StackTrace);
                 return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);

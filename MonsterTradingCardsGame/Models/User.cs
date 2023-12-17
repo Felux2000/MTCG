@@ -15,6 +15,7 @@ namespace MonsterTradingCardsGame.Models
         public int Coins { get; set; }
         public int Elo { get; set; }
         public int Wins { get; set; }
+        public int Losses { get; set; }
         public int GamesPlayed { get; set; }
         public string Bio { get; set; }
         public string Image { get; set; }
@@ -30,6 +31,7 @@ namespace MonsterTradingCardsGame.Models
             Coins = 20;
             Elo = 100;
             Wins = 0;
+            Losses = 0;
             GamesPlayed = 0;
             Bio = string.Empty;
             Image = string.Empty;
@@ -38,13 +40,14 @@ namespace MonsterTradingCardsGame.Models
             HasDeck = false;
         }
         //existing user
-        public User(string username, int coins, int elo, int wins, int gamesPlayed, string bio, string image, string authToken, bool hasDeck)
+        public User(string username, int coins, int elo, int wins, int losses, int gamesPlayed, string bio, string image, string authToken, bool hasDeck)
         {
             Username = username;
             Password = string.Empty;
             Coins = coins;
             Elo = elo;
             Wins = wins;
+            Losses = losses;
             GamesPlayed = gamesPlayed;
             Bio = bio;
             Image = image;
@@ -62,7 +65,7 @@ namespace MonsterTradingCardsGame.Models
         }
         public string ShowStats()
         {
-            return $"{{ \"Name\": \"{Username}\", \"Elo\": \"{Elo}\", \"Wins\": \"{Wins}\", \"Losses\": \"{GamesPlayed - Wins}\", \"W / L\": \"{(GamesPlayed == 0 ? 0 : ((GamesPlayed - Wins) == 0 ? Wins : Math.Round((double)Wins / ((double)GamesPlayed - (double)Wins), 2).ToString().Replace(',', '.')))}\" }}";
+            return $"{{ \"Name\": \"{Username}\", \"Elo\": \"{Elo}\", \"Wins\": \"{Wins}\", \"Losses\": \"{Losses}\", \"W / L\": \"{(GamesPlayed == 0 ? 0 : ((Losses) == 0 ? Wins : Math.Round((double)Wins / ((double)Losses), 2).ToString().Replace(',', '.')))}\" }}";
         }
 
     }

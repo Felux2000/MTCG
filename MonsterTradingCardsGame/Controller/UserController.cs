@@ -17,7 +17,7 @@ namespace MonsterTradingCardsGame.Controller
     internal class UserController : Controller
     {
         TransactionDao transactionDao;
-        public UserController(NpgsqlDataSource dbConnection) : base(dbConnection)
+        public UserController(NpgsqlDataSource dbConnection) : base(new(dbConnection))
         {
             transactionDao = new(dbConnection);
         }

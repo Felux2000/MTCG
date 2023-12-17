@@ -47,6 +47,7 @@ namespace MonsterTradingCardsGame.Models
                 case 0: Type = TransactionType.package; break;
                 case 1: Type = TransactionType.trade; break;
                 case 2: Type = TransactionType.coinBuy; break;
+                default: throw new ArgumentException();
             }
         }
 
@@ -57,7 +58,7 @@ namespace MonsterTradingCardsGame.Models
                 case TransactionType.package: return $"{{ \"User\": \"{Username}\", \"PackageId\": \"{ObtainedID}\", \"Coins\": \"{Coins}\", \"Type\": \"Package\" }}";
                 case TransactionType.trade:
                     if (ObtainedID == Guid.Empty)
-                    { return $"{{ \"User\": \"{Username}\", \"SoldCardID\": \"{SoldCardID}\", \"Seller\": \"{Seller}\", \"Coins\": \"{Coins}\", \"Type\": \"Trade\" }}"; }
+                    { return $"{{ \"User\": \"{Username}\", \"SoldCardId\": \"{SoldCardID}\", \"Seller\": \"{Seller}\", \"Coins\": \"{Coins}\", \"Type\": \"Trade\" }}"; }
                     else if (SoldCardID == Guid.Empty)
                     { return $"{{ \"User\": \"{Username}\", \"GainedCardId\": \"{ObtainedID}\", \"Seller\": \"{Seller}\", \"Coins\": \"{Coins}\", \"Type\": \"Trade\" }}"; }
                     else

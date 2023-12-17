@@ -21,9 +21,9 @@ namespace MonsterTradingCardsGame.Models
         private double _dmgMultiplierTwo = 1;
         private int RoundNum = 0;
         public string BattleLog { get; set; }
-        private Winner BattleWinner;
+        public Winner BattleWinner { get; set; }
 
-        private Winner RoundWinner(Card cardOne, Card cardTwo)
+        public Winner RoundWinner(Card cardOne, Card cardTwo)
         {
             double DamageOne;
             double DamageOneRaw;
@@ -127,12 +127,12 @@ namespace MonsterTradingCardsGame.Models
 
         }
 
-        private static string DecimalReplace(double number)
+        public static string DecimalReplace(double number)
         {
             return $"{Math.Round(number, 2)}".Replace(',', '.');
         }
 
-        private static int CalculateElo(int eloCalc, int eloRef, bool winner)
+        public static int CalculateElo(int eloCalc, int eloRef, bool winner)
         {
             int eloIncrease = 5;
             int eloDecrease = 3;
@@ -140,9 +140,9 @@ namespace MonsterTradingCardsGame.Models
             {
                 if (eloCalc < eloRef)
                 {
-                    double eloBoost = (eloRef - eloCalc) / 10;
+                    double eloBoost = (double)(eloRef - eloCalc) / 10;
                     eloBoost += eloBoost < 1 ? 1 : 0;
-                    eloIncrease = (int)(eloIncrease * eloBoost);
+                    eloIncrease = (int)MathF.Round((float)(eloIncrease * eloBoost));
                 }
                 eloCalc += eloIncrease;
             }
@@ -150,9 +150,11 @@ namespace MonsterTradingCardsGame.Models
             {
                 if (eloCalc > eloRef)
                 {
-                    double eloBoost = (eloCalc - eloRef) / 10;
+                    double eloBoost = (double)(eloCalc - eloRef) / 10;
                     eloBoost += eloBoost < 1 ? 1 : 0;
-                    eloDecrease = (int)(eloDecrease * eloBoost);
+                    Console.WriteLine(eloBoost);
+                    eloDecrease = (int)MathF.Round((float)(eloDecrease * eloBoost));
+                    Console.WriteLine(eloDecrease);
                 }
                 eloCalc -= eloDecrease;
             }
@@ -170,6 +172,7 @@ namespace MonsterTradingCardsGame.Models
                     BattleLog = $"{BattleLog}User {Requestor.Username} won the battle!\n";
                     break;
                 case Winner.opponent:
+                    Requestor.Losses++;
                     Requestor.Elo = CalculateElo(Requestor.Elo, Opponent.Elo, false);
                     BattleLog = $"{BattleLog}User {Opponent.Username} won the battle!\n";
                     break;
@@ -232,7 +235,7 @@ namespace MonsterTradingCardsGame.Models
             }
         }
 
-        private void CalculateDamageMultipliers()
+        public void CalculateDamageMultipliers()
         {
             _dmgMultiplierOne = 1;
             foreach (KeyValuePair<string, int> effect in _effectDurationOne)
@@ -253,7 +256,7 @@ namespace MonsterTradingCardsGame.Models
             }
         }
 
-        private void DecreaseEffectDurations()
+        public void DecreaseEffectDurations()
         {
             foreach (KeyValuePair<string, int> effect in _effectDurationOne)
             {
@@ -281,7 +284,7 @@ namespace MonsterTradingCardsGame.Models
             _effectDurationTwo = new();
         }
 
-        private enum Winner
+        public enum Winner
         {
             none = 0, requestor = 1, opponent = 2
         }

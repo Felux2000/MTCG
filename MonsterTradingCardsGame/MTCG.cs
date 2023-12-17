@@ -3,6 +3,8 @@ using MonsterTradingCardsGame.Server;
 using MonsterTradingCardsGame.Services;
 using System.Data.SqlClient;
 
+
+[assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("TestProject")]
 namespace MonsterTradingCardsGame
 {
     internal class MTCG

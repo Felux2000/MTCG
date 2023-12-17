@@ -15,7 +15,7 @@ namespace MonsterTradingCardsGame.Controller
     internal class TransactionController : Controller
     {
         TransactionDao transactionDao;
-        public TransactionController(NpgsqlDataSource dbConnection) : base(dbConnection)
+        public TransactionController(NpgsqlDataSource dbConnection) : base(new(dbConnection))
         {
             transactionDao = new(dbConnection);
         }
@@ -45,6 +45,11 @@ namespace MonsterTradingCardsGame.Controller
                 return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
             }
             catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.StackTrace);
+                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+            }
+            catch (ArgumentException e)
             {
                 Console.WriteLine(e.StackTrace);
                 return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
@@ -82,6 +87,11 @@ namespace MonsterTradingCardsGame.Controller
                 return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
             }
             catch (NpgsqlException e)
+            {
+                Console.WriteLine(e.StackTrace);
+                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+            }
+            catch (ArgumentException e)
             {
                 Console.WriteLine(e.StackTrace);
                 return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);

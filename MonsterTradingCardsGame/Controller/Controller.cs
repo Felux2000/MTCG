@@ -13,12 +13,10 @@ namespace MonsterTradingCardsGame.Controller
 {
     internal class Controller
     {
-        NpgsqlDataSource DbConnection;
         protected UserDao userDao;
-        public Controller(NpgsqlDataSource dbConnection)
+        public Controller(UserDao userdao)
         {
-            DbConnection = dbConnection;
-            userDao = new UserDao(DbConnection);
+            userDao = userdao;
         }
 
         public bool IsAuthorized(string authToken)

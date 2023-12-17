@@ -19,4 +19,10 @@
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
 
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>"DynamicProxyGenAssembly2"</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
+
 </Project>
