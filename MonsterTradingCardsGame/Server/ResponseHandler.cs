@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using Npgsql;
 using System.Net;
 using MonsterTradingCardsGame.Controller;
+using MonsterTradingCardsGame.Services;
 
 namespace MonsterTradingCardsGame.Server
 {
@@ -20,7 +21,8 @@ namespace MonsterTradingCardsGame.Server
         private TradingController TradingController;
         private BattleController BattleController;
         private TransactionController TransactionController;
-        public ResponseHandler(NpgsqlDataSource dbConnection)
+        private DatabaseCreator DatabaseCreator;
+        public ResponseHandler(NpgsqlDataSource dbConnection, bool dbRefresh)
         {
             DbConnection = dbConnection;
             UserController = new(DbConnection);
@@ -28,6 +30,8 @@ namespace MonsterTradingCardsGame.Server
             TradingController = new(DbConnection);
             BattleController = new(DbConnection);
             TransactionController = new(DbConnection);
+            DatabaseCreator = new(DbConnection);
+            DatabaseCreator.PrepareDatabase(dbRefresh);
         }
 
         public Response CreateResponse(Request request)

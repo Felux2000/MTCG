@@ -14,7 +14,7 @@ namespace MonsterTradingCardsGame
             ResponseHandler ResponsHandler;
             MtcgServer Server;
 
-            ResponsHandler = new ResponseHandler(new DatabaseService().DbConnection);
+            ResponsHandler = new ResponseHandler(new DatabaseService().DbConnection, false);
             Server = new(ResponsHandler);
             Server.Start();
         }
