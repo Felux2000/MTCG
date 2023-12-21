@@ -1,6 +1,8 @@
 ﻿using MonsterTradingCardsGame.Daos;
-using MonsterTradingCardsGame.Models;
 using MonsterTradingCardsGame.Server;
+using MonsterTradingCardsGame.Models;
+using MonsterTradingCardsGame.Classes;
+using MonsterTradingCardsGame.Cards;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -10,18 +12,18 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using MonsterTradingCardsGame.Cards;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using Newtonsoft.Json.Linq;
 using System.Xml.Linq;
+using MonsterTradingCardsGame.Server.Responses;
+using static MonsterTradingCardsGame.Server.ProtocolSpecs;
 
 namespace MonsterTradingCardsGame.Controller
 {
     internal class TradingController : Controller
     {
-        CardDao cardDao;
-        TradeDao tradeDao;
-        TransactionDao transactionDao;
+        readonly CardDao cardDao;
+        readonly TradeDao tradeDao;
+        readonly TransactionDao transactionDao;
         public TradingController(NpgsqlDataSource dbConnection) : base(new(dbConnection))
         {
             cardDao = new(dbConnection);
@@ -48,20 +50,15 @@ namespace MonsterTradingCardsGame.Controller
                 return SendResponse(tradeDataJson, "null", HttpStatusCode.OK, ContentType.JSON);
 
             }
-            catch (JsonException e)
-            {
-                Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
-            }
             catch (NpgsqlException e)
             {
                 Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                return Response.InternalServerError();
             }
             catch (ArgumentException e)
             {
                 Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                return Response.InternalServerError();
             }
         }
 
@@ -69,9 +66,14 @@ namespace MonsterTradingCardsGame.Controller
         {
             try
             {
-                TradingDeal trade = JsonConvert.DeserializeObject<TradingDeal>(body.ToString());
+                TradingDeal? trade = JsonConvert.DeserializeObject<TradingDeal>(body.ToString());
 
-                if (!IsAuthorized(username + "-mtcgToken"))
+                if (trade == null)
+                {
+                    return Response.BadRequest();
+                }
+
+                if (!IsAuthorized($"{username}{PSAuthTokenSuffix}"))
                 {
                     return SendResponse("null", "Incorrect Token", HttpStatusCode.Unauthorized, ContentType.TEXT);
                 }
@@ -81,7 +83,7 @@ namespace MonsterTradingCardsGame.Controller
                     return SendResponse("null", "User not found", HttpStatusCode.NotFound, ContentType.TEXT);
                 }
 
-                if (trade.Id == string.Empty || trade.CardToTrade == string.Empty)
+                if (trade.Id == Guid.Empty || trade.CardToTrade == Guid.Empty)
                 {
                     return SendResponse("null", "TradeID or CardToTradeID not set", HttpStatusCode.BadRequest, ContentType.TEXT);
                 }
@@ -114,24 +116,24 @@ namespace MonsterTradingCardsGame.Controller
             catch (JsonException e)
             {
                 Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                return Response.InternalServerError();
             }
             catch (NpgsqlException e)
             {
                 Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                return Response.InternalServerError();
             }
             catch (ArgumentException e)
             {
                 Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                return Response.InternalServerError();
             }
         }
 
-        public Response TakeTradingDeal(string tradeID, string body, string username)
+        public Response TakeTradingDeal(string tradeID, string? body, string username)
         {
             bool coinTrade = false;
-            Card offeredCard = null;
+            Card? offeredCard = null;
             Card cardInTrade;
             TradingDeal trade;
             User acceptUser;
@@ -140,18 +142,18 @@ namespace MonsterTradingCardsGame.Controller
             try
             {
 
-                string offeredCardID = string.Empty;
+                Guid offeredCardID = Guid.Empty;
                 if (body != null)
                 {
-                    offeredCardID = body.Trim().Trim('"').Trim();
+                    offeredCardID = Guid.Parse(body.Trim().Trim('"').Trim());
                 }
 
-                if (!IsAuthorized(username + "-mtcgToken"))
+                if (!IsAuthorized($"{username}{PSAuthTokenSuffix}"))
                 {
                     return SendResponse("null", "Incorrect Token", HttpStatusCode.Unauthorized, ContentType.TEXT);
                 }
                 //check if tradingDeal exists
-                trade = tradeDao.Read(tradeID);
+                trade = tradeDao.Read(Guid.Parse(tradeID));
                 if (trade == null)
                 {
                     return SendResponse("null", "TradingDeal does not exist", HttpStatusCode.NotFound, ContentType.TEXT);
@@ -160,7 +162,7 @@ namespace MonsterTradingCardsGame.Controller
                 {
                     coinTrade = true;
                 }
-                if (offeredCardID == string.Empty && !coinTrade)
+                if (offeredCardID == Guid.Empty && !coinTrade)
                 {
                     return SendResponse("null", "No Card offered", HttpStatusCode.NotFound, ContentType.TEXT);
                 }
@@ -215,7 +217,7 @@ namespace MonsterTradingCardsGame.Controller
                 string tradeAcceptUser = acceptUser.Username;
                 cardInTrade = cardDao.Read(trade.CardToTrade);
 
-                if (!coinTrade)
+                if (!coinTrade && offeredCard != null)
                 {
                     offeredCard.Username = tradeOfferUser;
                     cardDao.Update(offeredCard);
@@ -229,8 +231,9 @@ namespace MonsterTradingCardsGame.Controller
                 userDao.Update(offerUser);
                 userDao.Update(acceptUser);
 
-                Transaction transactionBuyer = new(acceptUser.Username, Guid.Parse(cardInTrade.CardID), offerUser.Username, coinTrade ? Guid.Empty : Guid.Parse(offeredCard.CardID), -trade.CoinCost, TransactionType.trade);
-                Transaction transactionSeller = new(offerUser.Username, coinTrade ? Guid.Empty : Guid.Parse(offeredCard.CardID), acceptUser.Username, Guid.Parse(cardInTrade.CardID), trade.CoinCost, TransactionType.trade);
+
+                Transaction transactionBuyer = new(acceptUser.Username, cardInTrade.CardID, offerUser.Username, coinTrade ? Guid.Empty : offeredCard.CardID, -trade.CoinCost, TransactionType.trade);
+                Transaction transactionSeller = new(offerUser.Username, coinTrade ? Guid.Empty : offeredCard.CardID, acceptUser.Username, cardInTrade.CardID, trade.CoinCost, TransactionType.trade);
                 transactionDao.Create(transactionBuyer);
                 transactionDao.Create(transactionSeller);
 
@@ -239,20 +242,15 @@ namespace MonsterTradingCardsGame.Controller
                 return SendResponse("Trading deal successfully executed", "null", HttpStatusCode.OK, ContentType.TEXT);
 
             }
-            catch (JsonException e)
-            {
-                Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
-            }
             catch (NpgsqlException e)
             {
                 Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                return Response.InternalServerError();
             }
             catch (ArgumentException e)
             {
                 Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                return Response.InternalServerError();
             }
         }
 
@@ -261,12 +259,12 @@ namespace MonsterTradingCardsGame.Controller
             try
             {
                 //check if authtoken exists
-                if (!IsAuthorized(username + "-mtcgToken"))
+                if (!IsAuthorized($"{username}{PSAuthTokenSuffix}"))
                 {
                     return SendResponse("null", "Incorrect Token", HttpStatusCode.Unauthorized, ContentType.TEXT);
                 }
                 //check if trade with this id exists
-                TradingDeal trade = tradeDao.Read(tradeID);
+                TradingDeal trade = tradeDao.Read(Guid.Parse(tradeID));
                 if (trade == null)
                 {
                     return SendResponse("null", "TradingDeal does not exist", HttpStatusCode.NotFound, ContentType.TEXT);
@@ -295,12 +293,12 @@ namespace MonsterTradingCardsGame.Controller
             catch (NpgsqlException e)
             {
                 Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                return Response.InternalServerError();
             }
             catch (ArgumentException e)
             {
                 Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                return Response.InternalServerError();
             }
         }
 

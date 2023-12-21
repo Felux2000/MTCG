@@ -1,5 +1,5 @@
 ﻿using MonsterTradingCardsGame.Cards;
-using MonsterTradingCardsGame.Models;
+using MonsterTradingCardsGame.Classes;
 using Npgsql;
 using System;
 using System.Collections;
@@ -12,7 +12,7 @@ namespace MonsterTradingCardsGame.Daos
 {
     internal class TradeDao
     {
-        NpgsqlDataSource DbConnection;
+        readonly NpgsqlDataSource DbConnection;
 
         public TradeDao(NpgsqlDataSource dbConnection)
         {
@@ -24,8 +24,8 @@ namespace MonsterTradingCardsGame.Daos
             string query = "INSERT INTO tradingdeals (tradeid, offeredcardid, cardtype, mindamage, coins, username) VALUES (@tradeid, @offeredcardid, @cardtype, @mindamage, @coins, @username);";
             using (var cmd = DbConnection.CreateCommand(query))
             {
-                cmd.Parameters.AddWithValue("tradeid", Guid.Parse(trade.Id));
-                cmd.Parameters.AddWithValue("offeredcardid", Guid.Parse(trade.CardToTrade));
+                cmd.Parameters.AddWithValue("tradeid", trade.Id);
+                cmd.Parameters.AddWithValue("offeredcardid", trade.CardToTrade);
                 cmd.Parameters.AddWithValue("cardtype", (int)trade.Type);
                 cmd.Parameters.AddWithValue("mindamage", trade.MinimumDamage);
                 cmd.Parameters.AddWithValue("coins", trade.CoinCost);
@@ -34,19 +34,19 @@ namespace MonsterTradingCardsGame.Daos
             }
         }
 
-        public TradingDeal Read(string tradeid)
+        public TradingDeal Read(Guid tradeid)
         {
             string query = "SELECT tradeid, offeredcardid, cardtype, mindamage, coins, username FROM tradingdeals WHERE tradeid = @tradeid;";
             using (var cmd = DbConnection.CreateCommand(query))
             {
-                cmd.Parameters.AddWithValue("tradeid", Guid.Parse(tradeid));
+                cmd.Parameters.AddWithValue("tradeid", tradeid);
                 using (var reader = cmd.ExecuteReader())
                 {
                     if (reader.Read())
                     {
                         TradingDeal tmpDeal = new(
-                            reader.GetGuid(0).ToString(),
-                            reader.GetGuid(1).ToString(),
+                            reader.GetGuid(0),
+                            reader.GetGuid(1),
                             reader.GetInt32(2),
                             reader.GetDouble(3),
                             reader.GetInt32(4),
@@ -73,8 +73,8 @@ namespace MonsterTradingCardsGame.Daos
                     while (reader.Read())
                     {
                         TradingDeal tmpDeal = new(
-                            reader.GetGuid(0).ToString(),
-                            reader.GetGuid(1).ToString(),
+                            reader.GetGuid(0),
+                            reader.GetGuid(1),
                             reader.GetInt32(2),
                             reader.GetDouble(3),
                             reader.GetInt32(4),
@@ -87,12 +87,12 @@ namespace MonsterTradingCardsGame.Daos
             return tradeList;
         }
 
-        public void Delete(string tradeid)
+        public void Delete(Guid tradeid)
         {
             string query = "DELETE FROM tradingdeals WHERE tradeid = @tradeid;";
             using (var cmd = DbConnection.CreateCommand(query))
             {
-                cmd.Parameters.AddWithValue("tradeid", Guid.Parse(tradeid));
+                cmd.Parameters.AddWithValue("tradeid", tradeid);
                 cmd.ExecuteNonQuery();
             }
         }

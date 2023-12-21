@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MonsterTradingCardsGame.Cards;
+using Newtonsoft.Json;
 
-namespace MonsterTradingCardsGame.Models
+namespace MonsterTradingCardsGame.Classes
 {
     internal class User
     {
@@ -24,6 +25,7 @@ namespace MonsterTradingCardsGame.Models
 
 
         //new user
+        [JsonConstructor]
         public User(string username, string password)
         {
             Username = username;

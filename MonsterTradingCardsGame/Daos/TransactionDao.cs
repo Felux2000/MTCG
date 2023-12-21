@@ -1,5 +1,5 @@
 ﻿using MonsterTradingCardsGame.Cards;
-using MonsterTradingCardsGame.Models;
+using MonsterTradingCardsGame.Classes;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ namespace MonsterTradingCardsGame.Daos
 {
     internal class TransactionDao
     {
-        NpgsqlDataSource DbConnection;
+        readonly NpgsqlDataSource DbConnection;
 
         public TransactionDao(NpgsqlDataSource dbConnection)
         {

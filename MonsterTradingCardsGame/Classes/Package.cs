@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MonsterTradingCardsGame.Cards;
 
-namespace MonsterTradingCardsGame.Models
+namespace MonsterTradingCardsGame.Classes
 {
     internal class Package
     {

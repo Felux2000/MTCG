@@ -1,5 +1,5 @@
 ﻿using MonsterTradingCardsGame.Cards;
-using MonsterTradingCardsGame.Models;
+using MonsterTradingCardsGame.Classes;
 using Npgsql;
 using System;
 using System.Collections;
@@ -12,8 +12,8 @@ namespace MonsterTradingCardsGame.Daos
 {
     internal class PackageDao
     {
-        NpgsqlDataSource DbConnection;
-        CardBuilder CardAssembler;
+        readonly NpgsqlDataSource DbConnection;
+        readonly CardBuilder CardAssembler;
         public PackageDao(NpgsqlDataSource dbConnection)
         {
             DbConnection = dbConnection;
@@ -26,11 +26,11 @@ namespace MonsterTradingCardsGame.Daos
             using (var cmd = DbConnection.CreateCommand(query))
             {
                 cmd.Parameters.AddWithValue("packageid", package.ID);
-                cmd.Parameters.AddWithValue("idone", Guid.Parse(package.Cards[0].CardID));
-                cmd.Parameters.AddWithValue("idtwo", Guid.Parse(package.Cards[1].CardID));
-                cmd.Parameters.AddWithValue("idthree", Guid.Parse(package.Cards[2].CardID));
-                cmd.Parameters.AddWithValue("idfour", Guid.Parse(package.Cards[3].CardID));
-                cmd.Parameters.AddWithValue("idfive", Guid.Parse(package.Cards[4].CardID));
+                cmd.Parameters.AddWithValue("idone", package.Cards[0].CardID);
+                cmd.Parameters.AddWithValue("idtwo", package.Cards[1].CardID);
+                cmd.Parameters.AddWithValue("idthree", package.Cards[2].CardID);
+                cmd.Parameters.AddWithValue("idfour", package.Cards[3].CardID);
+                cmd.Parameters.AddWithValue("idfive", package.Cards[4].CardID);
                 cmd.ExecuteNonQuery();
             }
         }
@@ -52,7 +52,7 @@ namespace MonsterTradingCardsGame.Daos
                         packageID = reader.GetGuid(0);
                         int cardIndex = reader.GetInt32(3);
                         Card tmpCard = new(
-                            reader.GetGuid(1).ToString(),
+                            reader.GetGuid(1),
                             reader.GetString(2),
                             CardAssembler.GetCardName(cardIndex),
                             CardAssembler.GetCardDamage(cardIndex),

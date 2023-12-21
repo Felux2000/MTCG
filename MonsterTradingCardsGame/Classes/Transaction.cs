@@ -4,10 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 using System.Xml.Linq;
 
-namespace MonsterTradingCardsGame.Models
+namespace MonsterTradingCardsGame.Classes
 {
     public enum TransactionType
     {
@@ -58,13 +57,13 @@ namespace MonsterTradingCardsGame.Models
                 case TransactionType.package: return $"{{ \"User\": \"{Username}\", \"PackageId\": \"{ObtainedID}\", \"Coins\": \"{Coins}\", \"Type\": \"Package\" }}";
                 case TransactionType.trade:
                     if (ObtainedID == Guid.Empty)
-                    { return $"{{ \"User\": \"{Username}\", \"SoldCardId\": \"{SoldCardID}\", \"Seller\": \"{Seller}\", \"Coins\": \"{Coins}\", \"Type\": \"Trade\" }}"; }
+                    { return $"{{ \"User\": \"{Username}\", \"SoldCardId\": \"{SoldCardID}\", \"Buyer\": \"{Seller}\", \"Coins\": \"{Coins}\", \"Type\": \"Trade\" }}"; }
                     else if (SoldCardID == Guid.Empty)
                     { return $"{{ \"User\": \"{Username}\", \"GainedCardId\": \"{ObtainedID}\", \"Seller\": \"{Seller}\", \"Coins\": \"{Coins}\", \"Type\": \"Trade\" }}"; }
                     else
-                    { return $"{{ \"User\": \"{Username}\", \"GainedCardId\": \"{ObtainedID}\", \"SoldCardId\": \"{SoldCardID}\", \"Seller\": \"{Seller}\", \"Coins\": \"{Coins}\", \"Type\": \"Trade\" }}"; }
+                    { return $"{{ \"User\": \"{Username}\", \"SoldCardId\": \"{SoldCardID}\", \"GainedCardId\": \"{ObtainedID}\", \"Seller\": \"{Seller}\", \"Coins\": \"{Coins}\", \"Type\": \"Trade\" }}"; }
                 case TransactionType.coinBuy: return $"{{ \"User\": \"{Username}\", \"Coins\": \"{Coins}\", \"Type\": \"CoinPurchase\" }}";
-                default: return $"{{ \"User\": \"{Username}\", \"GainedCardId\": \"{ObtainedID}\", \"SoldCardId\": \"{SoldCardID}\", \"Seller\": \"{Seller}\", \"Coins\": \"{Coins}\" , \"Type\": \"{Type}\"}}";
+                default: return $"{{ \"User\": \"{Username}\", \"SoldCardId\": \"{SoldCardID}\", \"GainedCardId\": \"{ObtainedID}\", \"Seller\": \"{Seller}\", \"Coins\": \"{Coins}\" , \"Type\": \"{Type}\"}}";
             }
         }
     }

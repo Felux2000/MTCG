@@ -1,12 +1,11 @@
 using MonsterTradingCardsGame.Server;
 using MonsterTradingCardsGame.Cards;
-using MonsterTradingCardsGame.Models;
+using MonsterTradingCardsGame.Classes;
 using Npgsql;
 using NSubstitute;
 using NSubstitute.Core;
 using System.ComponentModel;
 using System.Data.Common;
-using Npgsql;
 using Microsoft.VisualBasic;
 
 namespace TestProject
@@ -27,7 +26,7 @@ namespace TestProject
             CardType typeExpected = CardType.monster;
             CardType typeReal;
 
-            deal = new(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), cardType, 15, 5);
+            deal = new(Guid.NewGuid(), Guid.NewGuid(), cardType, 15, 5);
             typeReal = deal.Type;
 
             Assert.That(typeReal, Is.EqualTo(typeExpected));
@@ -40,7 +39,7 @@ namespace TestProject
             CardType typeExpected = CardType.spell;
             CardType typeReal;
 
-            deal = new(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), cardType, 15, 5);
+            deal = new(Guid.NewGuid(), Guid.NewGuid(), cardType, 15, 5);
             typeReal = deal.Type;
 
             Assert.That(typeReal, Is.EqualTo(typeExpected));
@@ -51,7 +50,7 @@ namespace TestProject
         {
             int cardType = 3;
 
-            Assert.Throws<ArgumentException>(() => deal = new(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), cardType, 15, 5));
+            Assert.Throws<ArgumentException>(() => deal = new(Guid.NewGuid(), Guid.NewGuid(), cardType, 15, 5));
         }
 
         [Test]
@@ -59,14 +58,14 @@ namespace TestProject
         {
             string cardType = "spells";
 
-            Assert.Throws<ArgumentException>(() => deal = new(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), cardType, 15, 5));
+            Assert.Throws<ArgumentException>(() => deal = new(Guid.NewGuid(), Guid.NewGuid(), cardType, 15, 5));
         }
 
         [Test]
         public void TradingDealShowDeal()
         {
-            string id = Guid.NewGuid().ToString();
-            deal = new(id, Guid.Empty.ToString(), 0, 15, 5);
+            Guid id = Guid.NewGuid();
+            deal = new(id, Guid.Empty, 0, 15, 5);
 
             string expected = $"{{ \"Id\": \"{id}\", \"CardToTrade\": \"{Guid.Empty}\", \"Type\": \"monster\", \"MinimumDamage\": \"15\", \"CoinCost\": \"5\" }}";
 

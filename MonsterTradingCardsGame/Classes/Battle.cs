@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using MonsterTradingCardsGame.Cards;
 using MonsterTradingCardsGame.Daos;
 
-namespace MonsterTradingCardsGame.Models
+namespace MonsterTradingCardsGame.Classes
 {
     internal class Battle
     {
@@ -190,6 +190,11 @@ namespace MonsterTradingCardsGame.Models
             int IndexOne;
             int IndexTwo;
             BattleLog = $"NEW BATTLE\n\nUser {Requestor.Username} and User {Opponent.Username} are battling!!!\n\n";
+
+            if (DeckOne == null || DeckTwo == null)
+            {
+                throw new NullReferenceException();
+            }
 
             while (DeckOne.Count != 0 && DeckTwo.Count != 0 && RoundNum < 100)
             {

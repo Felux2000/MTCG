@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using MonsterTradingCardsGame.Server.Responses;
+using MonsterTradingCardsGame.Server.Requests;
+using Newtonsoft.Json;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -12,9 +14,9 @@ namespace MonsterTradingCardsGame.Server
 {
     internal class MtcgServer
     {
-        private Socket ServerSocket;
-        private int Port;
-        private ResponseHandler ResponsHandler;
+        private readonly Socket ServerSocket;
+        private readonly int Port;
+        private readonly ResponseHandler ResponsHandler;
         public MtcgServer(ResponseHandler responseHandler)
         {
             ResponsHandler = responseHandler;

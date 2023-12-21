@@ -1,16 +1,16 @@
-﻿using System;
+﻿using MonsterTradingCardsGame.Classes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MonsterTradingCardsGame.Models;
 using Npgsql;
 
 namespace MonsterTradingCardsGame.Daos
 {
     internal class UserDao
     {
-        NpgsqlDataSource DbConnection;
+        readonly NpgsqlDataSource DbConnection;
 
         public UserDao(NpgsqlDataSource dbConnection)
         {

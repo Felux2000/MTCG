@@ -1,6 +1,7 @@
 ﻿using MonsterTradingCardsGame.Daos;
 using MonsterTradingCardsGame.Server;
 using MonsterTradingCardsGame.Models;
+using MonsterTradingCardsGame.Classes;
 using MonsterTradingCardsGame.Cards;
 using Npgsql;
 using System;
@@ -10,12 +11,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net;
+using MonsterTradingCardsGame.Server.Responses;
+using static MonsterTradingCardsGame.Server.ProtocolSpecs;
 
 namespace MonsterTradingCardsGame.Controller
 {
     internal class BattleController : Controller
     {
-        CardDao cardDao;
+        readonly CardDao cardDao;
+        private const int DeckSize = 4;
         public BattleController(NpgsqlDataSource dbConnection) : base(new(dbConnection))
         {
             cardDao = new(dbConnection);
@@ -25,7 +29,7 @@ namespace MonsterTradingCardsGame.Controller
         {
             try
             {
-                if (!IsAuthorized(username + "-mtcgToken"))
+                if (!IsAuthorized($"{username}{PSAuthTokenSuffix}"))
                 {
                     return SendResponse("null", "Incorrect Token", HttpStatusCode.Unauthorized, ContentType.TEXT);
                 }
@@ -57,7 +61,7 @@ namespace MonsterTradingCardsGame.Controller
                     }
                     opponentFound = true;
                     deckOpponent = cardDao.ReadDeck(opponent.Username);
-                    if (!opponent.HasDeck || deckOpponent.Count != 4)
+                    if (!opponent.HasDeck || deckOpponent.Count != DeckSize)
                     {
                         opponent.HasDeck = false;
                         userDao.Update(opponent);
@@ -76,7 +80,12 @@ namespace MonsterTradingCardsGame.Controller
             catch (NpgsqlException e)
             {
                 Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                return Response.InternalServerError();
+            }
+            catch (NullReferenceException e)
+            {
+                Console.WriteLine(e.StackTrace);
+                return Response.InternalServerError();
             }
         }
     }

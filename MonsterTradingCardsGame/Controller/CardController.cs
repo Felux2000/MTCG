@@ -1,6 +1,7 @@
 ﻿using MonsterTradingCardsGame.Daos;
 using MonsterTradingCardsGame.Server;
 using MonsterTradingCardsGame.Models;
+using MonsterTradingCardsGame.Classes;
 using MonsterTradingCardsGame.Cards;
 using Npgsql;
 using System;
@@ -14,16 +15,17 @@ using System.Runtime.InteropServices;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Xml;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using MonsterTradingCardsGame.Server.Responses;
+using static MonsterTradingCardsGame.Server.ProtocolSpecs;
 
 namespace MonsterTradingCardsGame.Controller
 {
     internal class CardController : Controller
     {
-        CardDao cardDao;
-        PackageDao packageDao;
-        TransactionDao transactionDao;
-        CardBuilder cardBuilder;
+        readonly CardDao cardDao;
+        readonly PackageDao packageDao;
+        readonly TransactionDao transactionDao;
+        readonly CardBuilder cardBuilder;
         public CardController(NpgsqlDataSource dbConnection) : base(new(dbConnection))
         {
             cardDao = new(dbConnection);
@@ -37,7 +39,7 @@ namespace MonsterTradingCardsGame.Controller
             try
             {
                 //check if Token ok
-                if (!IsAuthorized(username + "-mtcgToken"))
+                if (!IsAuthorized($"{username}{PSAuthTokenSuffix}"))
                 {
                     return SendResponse("null", "Incorrect Token", HttpStatusCode.Unauthorized, ContentType.TEXT);
                 }
@@ -59,7 +61,7 @@ namespace MonsterTradingCardsGame.Controller
             catch (NpgsqlException e)
             {
                 Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                return Response.InternalServerError();
             }
         }
 
@@ -68,7 +70,7 @@ namespace MonsterTradingCardsGame.Controller
             try
             {
                 //check if Token ok
-                if (!IsAuthorized(username + "-mtcgToken"))
+                if (!IsAuthorized($"{username}{PSAuthTokenSuffix}"))
                 {
                     return SendResponse("null", "Incorrect Token", HttpStatusCode.Unauthorized, ContentType.TEXT);
                 }
@@ -78,29 +80,27 @@ namespace MonsterTradingCardsGame.Controller
                     return SendResponse("null", "User does not exist", HttpStatusCode.NotFound, ContentType.TEXT);
                 }
                 List<Card> deck = cardDao.ReadDeck(user.Username);
-                Console.WriteLine(deck.Count);
                 if (deck.Count == 0)
                 {
                     return SendResponse("No Cards in the Deck", "null", HttpStatusCode.NoContent, ContentType.TEXT);
                 }
-                string deckDataJson;
                 if (plain)
                 {
-                    string cardDataJson = CardData(deck, plain);
-                    return SendResponse(cardDataJson, "null", HttpStatusCode.OK, ContentType.TEXT);
+                    string deckDataJson = CardData(deck, plain);
+                    return SendResponse(deckDataJson, "null", HttpStatusCode.OK, ContentType.TEXT);
                 }
                 else
                 {
-                    string cardDataJson = "[";
-                    cardDataJson = $"{cardDataJson}{CardData(deck)}";
-                    cardDataJson = $"{cardDataJson}]";
-                    return SendResponse(cardDataJson, "null", HttpStatusCode.OK, ContentType.JSON);
+                    string deckDataJson = "[";
+                    deckDataJson = $"{deckDataJson}{CardData(deck)}";
+                    deckDataJson = $"{deckDataJson}]";
+                    return SendResponse(deckDataJson, "null", HttpStatusCode.OK, ContentType.JSON);
                 }
             }
             catch (NpgsqlException e)
             {
                 Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                return Response.InternalServerError();
             }
         }
 
@@ -109,34 +109,34 @@ namespace MonsterTradingCardsGame.Controller
             try
             {
                 List<Card> cards = new();
-                string[] cardId = new string[5];
-                int cardIndex;
-                JObject[] jsonCard = JsonConvert.DeserializeObject<JObject[]>(body.ToString());
-                int cardCount = jsonCard.Length;
+                CardModel[]? cardModel = JsonConvert.DeserializeObject<CardModel[]?>(body.ToString());
+                if (cardModel == null)
+                {
+                    return Response.BadRequest();
+                }
+                int cardCount = cardModel.Length;
                 if (cardCount != 5)
                 {
                     return SendResponse("null", "Not the appropriate number of cards", HttpStatusCode.Conflict, ContentType.TEXT);
                 }
                 for (int i = 0; i < cardCount; i++)
                 {
-                    cardId[i] = (string)jsonCard[i]["Id"];
-                    cardIndex = (int)jsonCard[i]["Index"];
-                    if (cardId[i] == string.Empty || cardIndex == null)
+                    if (cardModel[i].CardID != Guid.Empty)
+                    {
+                        Card tmpCard = new(cardModel[i].CardID, "admin", cardBuilder.GetCardName(cardModel[i].CardIndex), cardBuilder.GetCardDamage(cardModel[i].CardIndex), cardBuilder.GetCardElement(cardModel[i].CardIndex), cardBuilder.GetCardType(cardModel[i].CardIndex), false, false, cardModel[i].CardIndex);
+                        cards.Add(tmpCard);
+                    }
+                    else
                     {
                         return SendResponse("null", "Invalid Information for card declaration", HttpStatusCode.BadRequest, ContentType.TEXT);
-                    }
-                    Card tmpCard = new(cardId[i], "admin", cardBuilder.GetCardName(cardIndex), cardBuilder.GetCardDamage(cardIndex), cardBuilder.GetCardElement(cardIndex), cardBuilder.GetCardType(cardIndex), false, false, cardIndex);
-                    cards.Add(tmpCard);
-                }
-                foreach (string id in cardId)
-                {
-                    if (cardDao.Read(id) != null)
-                    {
-                        return SendResponse("null", "At least one card in the packages already exists", HttpStatusCode.Conflict, ContentType.TEXT);
                     }
                 }
                 foreach (Card card in cards)
                 {
+                    if (cardDao.Read(card.CardID) != null)
+                    {
+                        return SendResponse("null", "At least one card in the packages already exists", HttpStatusCode.Conflict, ContentType.TEXT);
+                    }
                     cardDao.Create(card);
                 }
                 Package newPackage = new(cards);
@@ -147,12 +147,12 @@ namespace MonsterTradingCardsGame.Controller
             catch (NpgsqlException e)
             {
                 Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                return Response.InternalServerError();
             }
             catch (JsonException e)
             {
                 Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                return Response.InternalServerError();
             }
             catch (IndexOutOfRangeException e)
             {
@@ -166,7 +166,7 @@ namespace MonsterTradingCardsGame.Controller
             try
             {
                 int packageCost = 5;
-                if (!IsAuthorized(username + "-mtcgToken"))
+                if (!IsAuthorized($"{username}{PSAuthTokenSuffix}"))
                 {
                     return SendResponse("null", "Incorrect Token", HttpStatusCode.Unauthorized, ContentType.TEXT);
                 }
@@ -207,7 +207,7 @@ namespace MonsterTradingCardsGame.Controller
             catch (NpgsqlException e)
             {
                 Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                return Response.InternalServerError();
             }
         }
 
@@ -216,17 +216,17 @@ namespace MonsterTradingCardsGame.Controller
             try
             {
                 //check if Token ok
-                if (!IsAuthorized(username + "-mtcgToken"))
+                if (!IsAuthorized($"{username}{PSAuthTokenSuffix}"))
                 {
                     return SendResponse("null", "Incorrect Token", HttpStatusCode.Unauthorized, ContentType.TEXT);
                 }
                 body = body.Trim().TrimStart('[').TrimEnd(']');
                 string[] splitByCardID = body.Split(",");
-                List<string> cardIDs = new();
+                List<Guid> cardIDs = new();
                 foreach (string splitString in splitByCardID)
                 {
-                    string trimmed = splitString.Trim().Trim('"');
-                    if (trimmed != string.Empty && !cardIDs.Contains(trimmed))
+                    Guid trimmed = Guid.Parse(splitString.Trim().Trim('"'));
+                    if (trimmed != Guid.Empty && !cardIDs.Contains(trimmed))
                     {
                         cardIDs.Add(trimmed);
                     }
@@ -245,7 +245,7 @@ namespace MonsterTradingCardsGame.Controller
 
                 //check if Cards belong to right user
                 List<Card> chosenCards = new();
-                foreach (string cardID in cardIDs)
+                foreach (Guid cardID in cardIDs)
                 {
                     Card tmpCard = cardDao.Read(cardID);
                     if (tmpCard == null)
@@ -269,7 +269,7 @@ namespace MonsterTradingCardsGame.Controller
             catch (NpgsqlException e)
             {
                 Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                return Response.InternalServerError();
             }
         }
 

@@ -1,12 +1,11 @@
 using MonsterTradingCardsGame.Server;
 using MonsterTradingCardsGame.Cards;
-using MonsterTradingCardsGame.Models;
+using MonsterTradingCardsGame.Classes;
 using Npgsql;
 using NSubstitute;
 using NSubstitute.Core;
 using System.ComponentModel;
 using System.Data.Common;
-using Npgsql;
 using Microsoft.VisualBasic;
 using System.Drawing;
 
@@ -14,8 +13,6 @@ namespace TestProject
 {
     public class TransactionTest
     {
-        private Transaction transaction;
-
         [SetUp]
         public void Setup()
         {
@@ -27,7 +24,7 @@ namespace TestProject
             TransactionType typeExpected = TransactionType.trade;
             TransactionType typeReal;
 
-            transaction = new(Guid.NewGuid(), "testuser", Guid.NewGuid(), "testseller", Guid.NewGuid(), 5, 1);
+            Transaction transaction = new(Guid.NewGuid(), "testuser", Guid.NewGuid(), "testseller", Guid.NewGuid(), 5, 1);
             typeReal = transaction.Type;
 
             Assert.That(typeReal, Is.EqualTo(typeExpected));
@@ -36,6 +33,7 @@ namespace TestProject
         [Test]
         public void TransactionTypeINT_ArgEx()
         {
+            Transaction transaction;
             int transactionType = 3;
 
             Assert.Throws<ArgumentException>(() => transaction = new(Guid.NewGuid(), "testuser", Guid.NewGuid(), "testseller", Guid.NewGuid(), 5, transactionType));
@@ -47,7 +45,7 @@ namespace TestProject
         {
             string user = "testuser";
             int coins = 5;
-            transaction = new(Guid.Empty, user, Guid.Empty, "testseller", Guid.Empty, coins, 0);
+            Transaction transaction = new(Guid.Empty, user, Guid.Empty, "testseller", Guid.Empty, coins, 0);
 
             string expected = $"{{ \"User\": \"{user}\", \"PackageId\": \"{Guid.Empty}\", \"Coins\": \"{coins}\", \"Type\": \"Package\" }}";
 
@@ -66,9 +64,9 @@ namespace TestProject
             Transaction transactionSoldEmpty = new(Guid.Empty, user, obtained, seller, Guid.Empty, coins, 1);
             Transaction transactionDefault = new(Guid.Empty, user, obtained, seller, sold, coins, 1);
 
-            string expectedObtainesEmpty = $"{{ \"User\": \"{user}\", \"SoldCardId\": \"{sold}\", \"Seller\": \"{seller}\", \"Coins\": \"{coins}\", \"Type\": \"Trade\" }}";
+            string expectedObtainesEmpty = $"{{ \"User\": \"{user}\", \"SoldCardId\": \"{sold}\", \"Buyer\": \"{seller}\", \"Coins\": \"{coins}\", \"Type\": \"Trade\" }}";
             string expectedSoldEmpty = $"{{ \"User\": \"{user}\", \"GainedCardId\": \"{obtained}\", \"Seller\": \"{seller}\", \"Coins\": \"{coins}\", \"Type\": \"Trade\" }}";
-            string expectedDefault = $"{{ \"User\": \"{user}\", \"GainedCardId\": \"{obtained}\", \"SoldCardId\": \"{sold}\", \"Seller\": \"{seller}\", \"Coins\": \"{coins}\", \"Type\": \"Trade\" }}";
+            string expectedDefault = $"{{ \"User\": \"{user}\", \"SoldCardId\": \"{sold}\", \"GainedCardId\": \"{obtained}\", \"Seller\": \"{seller}\", \"Coins\": \"{coins}\", \"Type\": \"Trade\" }}";
 
             Assert.Multiple(() =>
             {
@@ -83,7 +81,7 @@ namespace TestProject
         {
             string user = "testuser";
             int coins = 5;
-            transaction = new(Guid.Empty, user, Guid.Empty, "testseller", Guid.Empty, coins, 2);
+            Transaction transaction = new(Guid.Empty, user, Guid.Empty, "testseller", Guid.Empty, coins, 2);
 
             string expected = $"{{ \"User\": \"{user}\", \"Coins\": \"{coins}\", \"Type\": \"CoinPurchase\" }}";
 

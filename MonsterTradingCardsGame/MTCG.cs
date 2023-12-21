@@ -1,5 +1,6 @@
 ﻿using MonsterTradingCardsGame.Daos;
 using MonsterTradingCardsGame.Server;
+using MonsterTradingCardsGame.Server.Responses;
 using MonsterTradingCardsGame.Services;
 using System.Data.SqlClient;
 
@@ -14,7 +15,7 @@ namespace MonsterTradingCardsGame
             ResponseHandler ResponsHandler;
             MtcgServer Server;
 
-            ResponsHandler = new ResponseHandler(new DatabaseService().DbConnection, false);
+            ResponsHandler = new ResponseHandler(new DatabaseService().DbConnection, true);
             Server = new(ResponsHandler);
             Server.Start();
         }

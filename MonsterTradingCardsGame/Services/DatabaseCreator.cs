@@ -1,5 +1,5 @@
 ﻿using MonsterTradingCardsGame.Cards;
-using MonsterTradingCardsGame.Models;
+using MonsterTradingCardsGame.Classes;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using System;
@@ -16,7 +16,7 @@ namespace MonsterTradingCardsGame.Services
 {
     internal class DatabaseCreator
     {
-        NpgsqlDataSource DbConnection;
+        readonly NpgsqlDataSource DbConnection;
 
         public DatabaseCreator(NpgsqlDataSource dbConnection)
         {
@@ -53,7 +53,7 @@ namespace MonsterTradingCardsGame.Services
                 deck boolean NOT NULL,
                 losses integer NOT NULL,
                 CONSTRAINT users_pkey PRIMARY KEY (username)
-            )";
+            );";
             using (var cmd = DbConnection.CreateCommand(query))
             {
                 cmd.ExecuteNonQuery();
@@ -75,7 +75,7 @@ namespace MonsterTradingCardsGame.Services
                     REFERENCES users(username) MATCH SIMPLE
                     ON UPDATE CASCADE
                     ON DELETE CASCADE
-            )";
+            );";
             using (var cmd = DbConnection.CreateCommand(query))
             {
                 cmd.ExecuteNonQuery();
@@ -95,7 +95,7 @@ namespace MonsterTradingCardsGame.Services
                 packageid uuid NOT NULL,
                 ""timestamp"" timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 CONSTRAINT packages_pkey PRIMARY KEY (packageid)
-            )";
+            );";
             using (var cmd = DbConnection.CreateCommand(query))
             {
                 cmd.ExecuteNonQuery();
@@ -118,7 +118,7 @@ namespace MonsterTradingCardsGame.Services
                     REFERENCES users (username) MATCH SIMPLE
                     ON UPDATE CASCADE
                     ON DELETE CASCADE
-            )";
+            );";
             using (var cmd = DbConnection.CreateCommand(query))
             {
                 cmd.ExecuteNonQuery();
@@ -142,7 +142,7 @@ namespace MonsterTradingCardsGame.Services
                     REFERENCES users (username) MATCH SIMPLE
                     ON UPDATE CASCADE
                     ON DELETE CASCADE
-            )";
+            );";
             using (var cmd = DbConnection.CreateCommand(query))
             {
                 cmd.ExecuteNonQuery();
@@ -153,11 +153,11 @@ namespace MonsterTradingCardsGame.Services
         {
             using (var batch = DbConnection.CreateBatch())
             {
-                var batchcommand1 = new NpgsqlBatchCommand("DROP TABLE IF EXISTS users;");
-                var batchcommand2 = new NpgsqlBatchCommand("DROP TABLE IF EXISTS cards;");
-                var batchcommand3 = new NpgsqlBatchCommand("DROP TABLE IF EXISTS packages;");
-                var batchcommand4 = new NpgsqlBatchCommand("DROP TABLE IF EXISTS tradingdeals;");
-                var batchcommand5 = new NpgsqlBatchCommand("DROP TABLE IF EXISTS transactions;");
+                var batchcommand1 = new NpgsqlBatchCommand("DROP TABLE IF EXISTS users CASCADE;");
+                var batchcommand2 = new NpgsqlBatchCommand("DROP TABLE IF EXISTS cards CASCADE;");
+                var batchcommand3 = new NpgsqlBatchCommand("DROP TABLE IF EXISTS packages CASCADE;");
+                var batchcommand4 = new NpgsqlBatchCommand("DROP TABLE IF EXISTS tradingdeals CASCADE;");
+                var batchcommand5 = new NpgsqlBatchCommand("DROP TABLE IF EXISTS transactions CASCADE;");
 
                 batch.BatchCommands.Add(batchcommand1);
                 batch.BatchCommands.Add(batchcommand2);

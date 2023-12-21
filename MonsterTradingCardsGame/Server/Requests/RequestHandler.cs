@@ -7,10 +7,11 @@ using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
+using MonsterTradingCardsGame.Server.Responses;
 using Newtonsoft.Json;
 using Npgsql;
 
-namespace MonsterTradingCardsGame.Server
+namespace MonsterTradingCardsGame.Server.Requests
 {
     internal class RequestHandler
     {
@@ -27,6 +28,7 @@ namespace MonsterTradingCardsGame.Server
 
         public void Run()
         {
+
             try
             {
                 ClientStream = new NetworkStream(ClientSocket);
@@ -44,10 +46,9 @@ namespace MonsterTradingCardsGame.Server
             Response response;
             try
             {
-
                 if (request.Path == null)
                 {
-                    response = new Response(System.Net.HttpStatusCode.BadRequest, ContentType.JSON, "Pathname was not set");
+                    response = new Response(HttpStatusCode.BadRequest, ContentType.JSON, "Pathname was not set");
                 }
                 else
                 {
@@ -57,26 +58,33 @@ namespace MonsterTradingCardsGame.Server
             catch (NpgsqlException e)
             {
                 Console.WriteLine(e.StackTrace);
-                response = new Response(HttpStatusCode.InternalServerError, ContentType.TEXT, $"null error: Internal Server Error \n");
+                response = Response.InternalServerError();
             }
             catch (ArgumentException e)
             {
                 Console.WriteLine(e.StackTrace);
-                response = new Response(HttpStatusCode.InternalServerError, ContentType.TEXT, $"null error: Internal Server Error \n");
+                response = Response.InternalServerError();
             }
             catch (NullReferenceException e)
             {
                 Console.WriteLine(e.StackTrace);
-                response = new Response(HttpStatusCode.InternalServerError, ContentType.TEXT, $"null error: Internal Server Error \n");
+                response = Response.InternalServerError();
             }
             catch (JsonException e)
             {
                 Console.WriteLine(e.StackTrace);
-                response = new Response(HttpStatusCode.InternalServerError, ContentType.TEXT, $"null error: Internal Server Error \n");
+                response = Response.InternalServerError();
             }
-            using (StreamWriter writer = new(ClientStream))
+            if (ClientStream != null)
             {
-                writer.Write(response.Build());
+                using (StreamWriter writer = new(ClientStream))
+                {
+                    writer.Write(response.Build());
+                }
+            }
+            else
+            {
+                Console.WriteLine("ClientStream null");
             }
         }
 

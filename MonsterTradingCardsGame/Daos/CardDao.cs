@@ -11,8 +11,8 @@ namespace MonsterTradingCardsGame.Daos
 {
     internal class CardDao
     {
-        NpgsqlDataSource DbConnection;
-        CardBuilder CardAssembler;
+        readonly NpgsqlDataSource DbConnection;
+        readonly CardBuilder CardAssembler;
 
         public CardDao(NpgsqlDataSource dbConnection)
         {
@@ -24,7 +24,7 @@ namespace MonsterTradingCardsGame.Daos
             string query = "INSERT INTO \"cards\" (cardid, username, cardindex, indeck, instore) VALUES (@cardid, @username, @cardindex, @indeck, @instore)";
             using (var cmd = DbConnection.CreateCommand(query))
             {
-                cmd.Parameters.AddWithValue("cardid", Guid.Parse(card.CardID));
+                cmd.Parameters.AddWithValue("cardid", card.CardID);
                 cmd.Parameters.AddWithValue("username", card.Username);
                 cmd.Parameters.AddWithValue("cardindex", card.Index);
                 cmd.Parameters.AddWithValue("indeck", card.InDeck);
@@ -33,20 +33,19 @@ namespace MonsterTradingCardsGame.Daos
             }
         }
 
-        public Card Read(string cardid)
+        public Card Read(Guid cardid)
         {
-            Console.WriteLine($" card id {cardid}\n");
             string query = "SELECT cardid, username, cardindex, indeck, instore FROM \"cards\" WHERE cardid = @cardid;";
             using (var cmd = DbConnection.CreateCommand(query))
             {
-                cmd.Parameters.AddWithValue("cardid", Guid.Parse(cardid));
+                cmd.Parameters.AddWithValue("cardid", cardid);
                 using (var reader = cmd.ExecuteReader())
                 {
                     if (reader.Read())
                     {
                         int cardIndex = reader.GetInt32(2);
                         Card tmpCard = new(
-                            reader.GetGuid(0).ToString(),
+                            reader.GetGuid(0),
                             reader.GetString(1),
                             CardAssembler.GetCardName(cardIndex),
                             CardAssembler.GetCardDamage(cardIndex),
@@ -79,7 +78,7 @@ namespace MonsterTradingCardsGame.Daos
                     {
                         int cardIndex = reader.GetInt32(2);
                         Card tmpCard = new(
-                            reader.GetGuid(0).ToString(),
+                            reader.GetGuid(0),
                             reader.GetString(1),
                             CardAssembler.GetCardName(cardIndex),
                             CardAssembler.GetCardDamage(cardIndex),
@@ -106,7 +105,7 @@ namespace MonsterTradingCardsGame.Daos
                 cmd.Parameters.AddWithValue("username", card.Username);
                 cmd.Parameters.AddWithValue("indeck", card.InDeck);
                 cmd.Parameters.AddWithValue("instore", card.InStore);
-                cmd.Parameters.AddWithValue("cardid", Guid.Parse(card.CardID));
+                cmd.Parameters.AddWithValue("cardid", card.CardID);
                 cmd.ExecuteNonQuery();
             }
         }
@@ -122,7 +121,7 @@ namespace MonsterTradingCardsGame.Daos
                 batchcommand2.Parameters.AddWithValue("username", username);
                 for (int i = 0; i < 4; i++)
                 {
-                    batchcommand2.Parameters.AddWithValue($"cardid{i + 1}", Guid.Parse(cards[i].CardID));
+                    batchcommand2.Parameters.AddWithValue($"cardid{i + 1}", cards[i].CardID);
                 }
                 batch.BatchCommands.Add(batchcommand1);
                 batch.BatchCommands.Add(batchcommand2);
@@ -143,7 +142,7 @@ namespace MonsterTradingCardsGame.Daos
                     {
                         int cardindex = reader.GetInt32(2);
                         Card tmpCard = new(
-                            reader.GetGuid(0).ToString(),
+                            reader.GetGuid(0),
                             reader.GetString(1),
                             CardAssembler.GetCardName(cardindex),
                             CardAssembler.GetCardDamage(cardindex),

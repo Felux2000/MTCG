@@ -8,7 +8,7 @@ using System.Xml.Linq;
 using MonsterTradingCardsGame.Server;
 using Newtonsoft.Json;
 
-namespace MonsterTradingCardsGame.Models
+namespace MonsterTradingCardsGame.Classes
 {
     internal class TradingDeal
     {
@@ -19,14 +19,14 @@ namespace MonsterTradingCardsGame.Models
             {CardType.effect ,"effect"}
         };
 
-        public string Id { get; }
-        public string CardToTrade { get; }
+        public Guid Id { get; }
+        public Guid CardToTrade { get; }
         public CardType Type { get; }
         public double MinimumDamage { get; }
         public int CoinCost { get; }
         public string Username { get; set; }
 
-        public TradingDeal(string Id, string CardToTrade, int Type, double MinimumDamage, int CoinCost, string username = "")
+        public TradingDeal(Guid Id, Guid CardToTrade, int Type, double MinimumDamage, int CoinCost, string username = "")
         {
             this.Id = Id;
             this.CardToTrade = CardToTrade;
@@ -42,7 +42,7 @@ namespace MonsterTradingCardsGame.Models
             }
         }
         [JsonConstructor]
-        public TradingDeal(string Id, string CardToTrade, string Type, double MinimumDamage, int CoinCost, string username = "")
+        public TradingDeal(Guid Id, Guid CardToTrade, string Type, double MinimumDamage, int CoinCost, string username = "")
         {
             this.Id = Id;
             this.CardToTrade = CardToTrade;

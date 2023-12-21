@@ -1,7 +1,9 @@
 ﻿using MonsterTradingCardsGame.Daos;
-using MonsterTradingCardsGame.Models;
 using MonsterTradingCardsGame.Server;
+using MonsterTradingCardsGame.Models;
+using MonsterTradingCardsGame.Classes;
 using Npgsql;
+using MonsterTradingCardsGame.Cards;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +11,14 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using MonsterTradingCardsGame.Server.Responses;
+using static MonsterTradingCardsGame.Server.ProtocolSpecs;
 
 namespace MonsterTradingCardsGame.Controller
 {
     internal class TransactionController : Controller
     {
-        TransactionDao transactionDao;
+        readonly TransactionDao transactionDao;
         public TransactionController(NpgsqlDataSource dbConnection) : base(new(dbConnection))
         {
             transactionDao = new(dbConnection);
@@ -39,20 +43,15 @@ namespace MonsterTradingCardsGame.Controller
                 return SendResponse(transactionDataJson, "null", HttpStatusCode.OK, ContentType.JSON);
 
             }
-            catch (JsonException e)
-            {
-                Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
-            }
             catch (NpgsqlException e)
             {
                 Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                return Response.InternalServerError();
             }
             catch (ArgumentException e)
             {
                 Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                return Response.InternalServerError();
             }
         }
 
@@ -70,7 +69,7 @@ namespace MonsterTradingCardsGame.Controller
                 {
                     return SendResponse("null", "Access token is missing or invalid", HttpStatusCode.Forbidden, ContentType.TEXT);
                 }
-                List<Transaction> transactions = transactionDao.ReadFromUser(authToken.Split("-")[0]);
+                List<Transaction> transactions = transactionDao.ReadFromUser(authToken.Split(PSAuthTokenSeperator)[0]);
                 if (!transactions.Any())
                 {
                     return SendResponse("No transactions available", "null", HttpStatusCode.NoContent, ContentType.TEXT);
@@ -81,20 +80,15 @@ namespace MonsterTradingCardsGame.Controller
                 return SendResponse(transactionDataJson, "null", HttpStatusCode.OK, ContentType.JSON);
 
             }
-            catch (JsonException e)
-            {
-                Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
-            }
             catch (NpgsqlException e)
             {
                 Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                return Response.InternalServerError();
             }
             catch (ArgumentException e)
             {
                 Console.WriteLine(e.StackTrace);
-                return SendResponse("null", "Internal Server Error", HttpStatusCode.InternalServerError, ContentType.TEXT);
+                return Response.InternalServerError();
             }
         }
 

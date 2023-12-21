@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Npgsql;
 using System.Data.Common;
+using MonsterTradingCardsGame.Server.Responses;
 
 namespace MonsterTradingCardsGame.Controller
 {
@@ -27,10 +28,6 @@ namespace MonsterTradingCardsGame.Controller
 
         public Response SendResponse(string data, string error, HttpStatusCode statusCode, ContentType contetnType)
         {
-            if (statusCode == null)
-            {
-                throw new ArgumentException("Status cannot be null");
-            }
             if (contetnType == ContentType.JSON)
             {
                 return new(statusCode, ContentType.JSON, $"{{ \"data\": {data}, \"error\": {error} }}\n");

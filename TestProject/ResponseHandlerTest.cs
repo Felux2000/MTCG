@@ -1,23 +1,17 @@
-using MonsterTradingCardsGame.Server;
 using Npgsql;
 using NSubstitute;
 using NSubstitute.Core;
 using System.ComponentModel;
 using System.Data.Common;
-using Npgsql;
+using MonsterTradingCardsGame.Server.Responses;
 
 namespace TestProject
 {
     public class ResponseHandlerTest
     {
-        private NpgsqlDataSource connection;
-        private ResponseHandler responseHandler;
-
         [SetUp]
         public void Setup()
         {
-            connection = NpgsqlDataSource.Create("Server=localhost;");
-            responseHandler = new(connection);
         }
 
         [Test]

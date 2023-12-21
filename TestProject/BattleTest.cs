@@ -5,8 +5,7 @@ using NSubstitute;
 using NSubstitute.Core;
 using System.ComponentModel;
 using System.Data.Common;
-using Npgsql;
-using MonsterTradingCardsGame.Models;
+using MonsterTradingCardsGame.Classes;
 
 namespace TestProject
 {
@@ -30,7 +29,7 @@ namespace TestProject
             Battle.Winner expectedWinner = Battle.Winner.requestor;
             Battle.Winner realWinner;
 
-            realWinner = battle.RoundWinner(new(Guid.NewGuid().ToString(), battle.Requestor.Username, cardBuilder.GetCardName(cardUser1Index), cardBuilder.GetCardDamage(cardUser1Index), cardBuilder.GetCardElement(cardUser1Index), cardBuilder.GetCardType(cardUser1Index), false, false, cardUser1Index), new(Guid.NewGuid().ToString(), battle.Opponent.Username, cardBuilder.GetCardName(cardUser2Index), cardBuilder.GetCardDamage(cardUser2Index), cardBuilder.GetCardElement(cardUser2Index), cardBuilder.GetCardType(cardUser2Index), false, false, cardUser2Index));
+            realWinner = battle.RoundWinner(new(Guid.NewGuid(), battle.Requestor.Username, cardBuilder.GetCardName(cardUser1Index), cardBuilder.GetCardDamage(cardUser1Index), cardBuilder.GetCardElement(cardUser1Index), cardBuilder.GetCardType(cardUser1Index), false, false, cardUser1Index), new(Guid.NewGuid(), battle.Opponent.Username, cardBuilder.GetCardName(cardUser2Index), cardBuilder.GetCardDamage(cardUser2Index), cardBuilder.GetCardElement(cardUser2Index), cardBuilder.GetCardType(cardUser2Index), false, false, cardUser2Index));
 
             Assert.That(realWinner, Is.EqualTo(expectedWinner));
         }
@@ -43,7 +42,7 @@ namespace TestProject
             Battle.Winner expectedWinner = Battle.Winner.opponent;
             Battle.Winner realWinner;
 
-            realWinner = battle.RoundWinner(new(Guid.NewGuid().ToString(), battle.Requestor.Username, cardBuilder.GetCardName(cardUser1Index), cardBuilder.GetCardDamage(cardUser1Index), cardBuilder.GetCardElement(cardUser1Index), cardBuilder.GetCardType(cardUser1Index), false, false, cardUser1Index), new(Guid.NewGuid().ToString(), battle.Opponent.Username, cardBuilder.GetCardName(cardUser2Index), cardBuilder.GetCardDamage(cardUser2Index), cardBuilder.GetCardElement(cardUser2Index), cardBuilder.GetCardType(cardUser2Index), false, false, cardUser2Index));
+            realWinner = battle.RoundWinner(new(Guid.NewGuid(), battle.Requestor.Username, cardBuilder.GetCardName(cardUser1Index), cardBuilder.GetCardDamage(cardUser1Index), cardBuilder.GetCardElement(cardUser1Index), cardBuilder.GetCardType(cardUser1Index), false, false, cardUser1Index), new(Guid.NewGuid(), battle.Opponent.Username, cardBuilder.GetCardName(cardUser2Index), cardBuilder.GetCardDamage(cardUser2Index), cardBuilder.GetCardElement(cardUser2Index), cardBuilder.GetCardType(cardUser2Index), false, false, cardUser2Index));
 
             Assert.That(realWinner, Is.EqualTo(expectedWinner));
         }
@@ -56,7 +55,7 @@ namespace TestProject
             Battle.Winner expectedWinner = Battle.Winner.none;
             Battle.Winner realWinner;
 
-            realWinner = battle.RoundWinner(new(Guid.NewGuid().ToString(), battle.Requestor.Username, cardBuilder.GetCardName(cardUser1Index), cardBuilder.GetCardDamage(cardUser1Index), cardBuilder.GetCardElement(cardUser1Index), cardBuilder.GetCardType(cardUser1Index), false, false, cardUser1Index), new(Guid.NewGuid().ToString(), battle.Opponent.Username, cardBuilder.GetCardName(cardUser2Index), cardBuilder.GetCardDamage(cardUser2Index), cardBuilder.GetCardElement(cardUser2Index), cardBuilder.GetCardType(cardUser2Index), false, false, cardUser2Index));
+            realWinner = battle.RoundWinner(new(Guid.NewGuid(), battle.Requestor.Username, cardBuilder.GetCardName(cardUser1Index), cardBuilder.GetCardDamage(cardUser1Index), cardBuilder.GetCardElement(cardUser1Index), cardBuilder.GetCardType(cardUser1Index), false, false, cardUser1Index), new(Guid.NewGuid(), battle.Opponent.Username, cardBuilder.GetCardName(cardUser2Index), cardBuilder.GetCardDamage(cardUser2Index), cardBuilder.GetCardElement(cardUser2Index), cardBuilder.GetCardType(cardUser2Index), false, false, cardUser2Index));
 
             Assert.That(realWinner, Is.EqualTo(expectedWinner));
         }

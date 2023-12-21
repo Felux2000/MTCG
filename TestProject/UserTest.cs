@@ -1,6 +1,6 @@
 using MonsterTradingCardsGame.Server;
 using MonsterTradingCardsGame.Cards;
-using MonsterTradingCardsGame.Models;
+using MonsterTradingCardsGame.Classes;
 using Npgsql;
 using NSubstitute;
 using NSubstitute.Core;

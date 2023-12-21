@@ -4,29 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using MonsterTradingCardsGame.Server;
+using static MonsterTradingCardsGame.Server.ProtocolSpecs;
 
-namespace MonsterTradingCardsGame.Server
+namespace MonsterTradingCardsGame.Server.Requests
 {
-    public enum Method
-    {
-        GET = 0,
-        POST = 1,
-        PUT = 2,
-        DELETE = 3
-    }
-
-
     internal class Request
     {
-        private Dictionary<string, Method> stringToMethod = new Dictionary<string, Method>
-        {
-            {"GET" , Method.GET},
-            {"POST" ,Method.POST},
-            {"PUT" ,Method.PUT},
-            {"DELETE" ,Method.DELETE}
-        };
-
         public Method? HttpMethod { get; set; }
         public string? Path { get; set; }
         public string? Params { get; set; }
@@ -35,10 +18,6 @@ namespace MonsterTradingCardsGame.Server
         public string? Body { get; set; }
         public string? AuthToken { get; set; }
         public bool HasParams { get; set; }
-
-        private const string PHContentType = "Content-Type: ";
-        private const string PHContentLength = "Content-Length: ";
-        private const string PHAuthorization = "Authorization";
 
         public Request(Stream inputStream)
         {
@@ -51,28 +30,30 @@ namespace MonsterTradingCardsGame.Server
                 string? line;
                 using (StreamReader reader = new(inputStream, leaveOpen: true))
                 {
-                    if ((line = reader.ReadLine()) != string.Empty)
+                    line = reader.ReadLine();
+                    if (line != string.Empty && line != null)
                     {
-                        string[] splitLine = line.Split(' ');
-                        HasParams = splitLine[1].Contains('?');
+                        string[] splitLine = line.Split(PSRequestBlockSeperator);
+                        HasParams = splitLine[1].Contains(PSRequestParamSeperator);
                         HttpMethod = GetMethodFromLine(splitLine);
                         Path = GetPathFromLine(splitLine);
                         Params = GetParamsFromLine(splitLine);
 
-                        while ((line = reader.ReadLine()) != string.Empty)
+                        while (line != string.Empty && line != null)
                         {
-                            if (line.StartsWith(PHContentLength))
+                            if (line.StartsWith(PSContentLength))
                             {
                                 ContentLength = GetContentLengthFromLine(line);
                             }
-                            if (line.StartsWith(PHContentType))
+                            if (line.StartsWith(PSContentType))
                             {
                                 ContentType = GetContentTypeFromLine(line);
                             }
-                            if (line.StartsWith(PHAuthorization))
+                            if (line.StartsWith(PSAuthorization))
                             {
                                 AuthToken = GetTokenFromLine(line);
                             }
+                            line = reader.ReadLine();
                         }
                     }
 
@@ -102,7 +83,7 @@ namespace MonsterTradingCardsGame.Server
             }
         }
 
-        private Method GetMethodFromLine(string[] splitLine)
+        private static Method GetMethodFromLine(string[] splitLine)
         {
             return stringToMethod[splitLine[0].ToUpper()];
         }
@@ -111,7 +92,7 @@ namespace MonsterTradingCardsGame.Server
         {
             if (HasParams)
             {
-                return splitLine[1].Split("?")[0];
+                return splitLine[1].Split(PSRequestParamSeperator)[0];
             }
             return splitLine[1];
         }
@@ -120,28 +101,28 @@ namespace MonsterTradingCardsGame.Server
         {
             if (HasParams)
             {
-                return splitLine[1].Split("?")[1];
+                return splitLine[1].Split(PSRequestParamSeperator)[1];
             }
             return string.Empty;
         }
 
         private static int GetContentLengthFromLine(string line)
         {
-            return int.Parse(line[PHContentLength.Length..]);
+            return int.Parse(line[PSContentLength.Length..]);
         }
 
         private static string GetContentTypeFromLine(string line)
         {
-            return line[PHContentType.Length..];
+            return line[PSContentType.Length..];
         }
 
         private static string GetTokenFromLine(string line)
         {
-            string[] splitline = line.Split(' ');
+            string[] splitline = line.Split(PSRequestBlockSeperator);
             string token = string.Empty;
             for (int i = 0; i < splitline.Length; i++)
             {
-                if (splitline[i] == "Bearer")
+                if (splitline[i] == PSAuthorizationPrefix)
                 {
                     token = splitline[i + 1];
                     break;
