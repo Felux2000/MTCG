@@ -1,12 +1,4 @@
-﻿using MonsterTradingCardsGame.Cards;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-
-namespace MonsterTradingCardsGame.Models
+﻿namespace MonsterTradingCardsGame.Models
 {
     internal class UpdateUserModel
     {

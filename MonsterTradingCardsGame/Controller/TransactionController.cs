@@ -1,17 +1,9 @@
-﻿using MonsterTradingCardsGame.Daos;
+﻿using MonsterTradingCardsGame.Classes;
+using MonsterTradingCardsGame.Daos;
 using MonsterTradingCardsGame.Server;
-using MonsterTradingCardsGame.Models;
-using MonsterTradingCardsGame.Classes;
-using Npgsql;
-using MonsterTradingCardsGame.Cards;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 using MonsterTradingCardsGame.Server.Responses;
+using Npgsql;
+using System.Net;
 using static MonsterTradingCardsGame.Server.ProtocolSpecs;
 
 namespace MonsterTradingCardsGame.Controller

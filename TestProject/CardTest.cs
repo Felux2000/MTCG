@@ -1,9 +1,3 @@
-using MonsterTradingCardsGame.Server;
-using Npgsql;
-using NSubstitute;
-using NSubstitute.Core;
-using System.ComponentModel;
-using System.Data.Common;
 using MonsterTradingCardsGame.Cards;
 
 namespace TestProject
@@ -21,6 +15,7 @@ namespace TestProject
         [TestCase(1, 4)]
         [TestCase(6, 3)]
         [TestCase(2, 12)]
+        [TestCase(13, 0)]
         [TestCase(4, 5)]
         public void SpecialityTest_Zero(int cardIndex1, int cardIndex2)
         {

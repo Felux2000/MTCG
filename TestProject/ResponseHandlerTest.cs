@@ -1,8 +1,3 @@
-using Npgsql;
-using NSubstitute;
-using NSubstitute.Core;
-using System.ComponentModel;
-using System.Data.Common;
 using MonsterTradingCardsGame.Server.Responses;
 
 namespace TestProject
@@ -85,7 +80,7 @@ namespace TestProject
         }
 
         [Test]
-        public void CompareAuthTokenToUser_ArgNullExh()
+        public void CompareAuthTokenToUser_ArgNullEx()
         {
             string user = "testname";
 

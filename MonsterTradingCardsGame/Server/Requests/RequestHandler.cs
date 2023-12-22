@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Mime;
-using System.Net.Sockets;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading.Tasks;
-using MonsterTradingCardsGame.Server.Responses;
+﻿using MonsterTradingCardsGame.Server.Responses;
 using Newtonsoft.Json;
 using Npgsql;
+using System.Net;
+using System.Net.Sockets;
 
 namespace MonsterTradingCardsGame.Server.Requests
 {

@@ -1,14 +1,9 @@
-﻿using MonsterTradingCardsGame.Server.Responses;
-using MonsterTradingCardsGame.Server.Requests;
+﻿using MonsterTradingCardsGame.Server.Requests;
+using MonsterTradingCardsGame.Server.Responses;
 using Newtonsoft.Json;
 using Npgsql;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonsterTradingCardsGame.Server
 {
@@ -51,7 +46,6 @@ namespace MonsterTradingCardsGame.Server
                 {
                     Console.WriteLine(e.StackTrace);
                 }
-
             }
         }
 

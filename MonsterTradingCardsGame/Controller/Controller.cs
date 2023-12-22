@@ -1,14 +1,7 @@
-﻿using MonsterTradingCardsGame.Server;
-using MonsterTradingCardsGame.Daos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Npgsql;
-using System.Data.Common;
+﻿using MonsterTradingCardsGame.Daos;
+using MonsterTradingCardsGame.Server;
 using MonsterTradingCardsGame.Server.Responses;
+using System.Net;
 
 namespace MonsterTradingCardsGame.Controller
 {

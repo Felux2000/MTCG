@@ -1,13 +1,4 @@
-using MonsterTradingCardsGame.Server;
-using MonsterTradingCardsGame.Cards;
 using MonsterTradingCardsGame.Classes;
-using Npgsql;
-using NSubstitute;
-using NSubstitute.Core;
-using System.ComponentModel;
-using System.Data.Common;
-using Microsoft.VisualBasic;
-using System.Drawing;
 
 namespace TestProject
 {

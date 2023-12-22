@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MonsterTradingCardsGame.Cards;
+﻿using MonsterTradingCardsGame.Cards;
 
 namespace MonsterTradingCardsGame.Classes
 {

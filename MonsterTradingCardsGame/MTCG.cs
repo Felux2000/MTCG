@@ -1,8 +1,6 @@
-﻿using MonsterTradingCardsGame.Daos;
-using MonsterTradingCardsGame.Server;
+﻿using MonsterTradingCardsGame.Server;
 using MonsterTradingCardsGame.Server.Responses;
 using MonsterTradingCardsGame.Services;
-using System.Data.SqlClient;
 
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleToAttribute("TestProject")]

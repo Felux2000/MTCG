@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data.SqlClient;
-using System.Text.RegularExpressions;
-using Npgsql;
-using System.Net;
-using MonsterTradingCardsGame.Controller;
+﻿using MonsterTradingCardsGame.Server.Requests;
 using MonsterTradingCardsGame.Services;
-using MonsterTradingCardsGame.Server.Requests;
+using Npgsql;
 using static MonsterTradingCardsGame.Server.ProtocolSpecs;
 
 namespace MonsterTradingCardsGame.Server.Responses
